@@ -1,14 +1,25 @@
-* {
-  box-sizing: border-box;
+/**
+ * Styles globaux.
+ *
+ * Le fond blanc est impose sur html ET body : selon le navigateur et le mode
+ * sombre du systeme, une seule de ces deux regles peut etre ignoree, et la
+ * page apparaitrait alors noire. `color-scheme: light` empeche aussi le
+ * navigateur d'inverser les couleurs natives (barres de defilement, champs).
+ */
+html {
+  color-scheme: light only;
+  background-color: #ffffff;
 }
 
-html {
-  color-scheme: light;
+html,
+body {
+  min-height: 100%;
+  background-color: #ffffff;
 }
 
 body {
   margin: 0;
-  background: #ffffff;
+  background-color: #ffffff;
   color: #16202e;
   font-family:
     system-ui,
@@ -20,4 +31,12 @@ body {
     sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
 }

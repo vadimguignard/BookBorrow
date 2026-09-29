@@ -46,6 +46,7 @@ public class LivreService {
     private final OpenLibraryService openLibraryService;
     private final CatalogueCache catalogueCache;
     private final LivreRepository livreRepository;
+    private final RecommandationFusionService fusionService;
     private final int tailleCatalogue;
     private final int taillePage;
 
@@ -53,11 +54,13 @@ public class LivreService {
             OpenLibraryService openLibraryService,
             CatalogueCache catalogueCache,
             LivreRepository livreRepository,
+            RecommandationFusionService fusionService,
             @Value("${catalogue.taille:100}") int tailleCatalogue,
             @Value("${livres.taille-page:25}") int taillePage) {
         this.openLibraryService = openLibraryService;
         this.catalogueCache = catalogueCache;
         this.livreRepository = livreRepository;
+        this.fusionService = fusionService;
         this.tailleCatalogue = tailleCatalogue;
         this.taillePage = taillePage;
     }
@@ -175,33 +178,7 @@ public class LivreService {
      * disponibilite proviennent toujours de la base, jamais d'Open Library.
      */
     private List<LivreDto> fusionner(List<LivreCatalogue> catalogue) {
-        Map<String, Livre> parReference = livreRepository
-                .findByReferenceIn(catalogue.stream().map(LivreCatalogue::reference).toList())
-                .stream()
-                .collect(Collectors.toMap(Livre::getReference, livre -> livre, (a, b) -> a, HashMap::new));
-
-        return catalogue.stream()
-                .map(item -> versDto(item, parReference.get(item.reference())))
-                .toList();
-    }
-
-    private LivreDto versDto(LivreCatalogue item, Livre local) {
-        Statut statut = local != null ? local.getStatut() : Statut.LIBRE;
-        LocalDate dateDisponibilite = local != null ? local.getDateDisponibilite() : null;
-
-        // Un livre LIBRE n'a pas de date de disponibilite : elle ne concerne que les reservations.
-        if (statut != Statut.RESERVE) {
-            dateDisponibilite = null;
-        }
-        return new LivreDto(
-                item.reference(),
-                item.titre(),
-                item.auteur(),
-                item.anneePublication(),
-                item.coverUrl(),
-                statut,
-                dateDisponibilite,
-                statut == Statut.LIBRE);
+        return fusionService.versDto(catalogue);
     }
 
     /** Un filtre a "Toutes" ou "Tous" ne filtre rien. */
