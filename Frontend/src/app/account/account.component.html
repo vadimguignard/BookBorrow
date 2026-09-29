@@ -1,0 +1,28 @@
+<div class="app">
+  <main class="container">
+      <div class="espace">
+        <header class="espace__entete">
+          <p class="sur-titre">{{ contenu().surTitre }}</p>
+          <h1 class="titre-page">{{ contenu().titre }}</h1>
+        </header>
+
+        <div class="etat-vide">
+          <span class="etat-vide__signe" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              @if (section() === 'profil') {
+                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+                <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+              } @else {
+                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 1 4 16V5.5Z" />
+                <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 0 20 16V5.5Z" />
+              }
+            </svg>
+          </span>
+
+          <p class="etat-vide__texte">{{ contenu().vide }}</p>
+
+          <a class="button button--primary" routerLink="/">Parcourir le catalogue</a>
+        </div>
+      </div>
+  </main>
+</div>

@@ -1,187 +1,200 @@
 <div class="app">
-  <header class="page-header">
-    <div class="container">
-      <p class="eyebrow">Biblio Online</p>
-      <h1>Catalogue des livres</h1>
-      <p class="subtitle">
-        Consultez le catalogue, recherchez un ouvrage et filtrez par auteur, titre ou année
-        de publication. Les informations descriptives proviennent d'Open&nbsp;Library&nbsp;;
-        la disponibilité provient de notre bibliothèque.
-      </p>
-    </div>
-  </header>
-
   <main class="container">
-    <section class="filters" aria-label="Recherche et filtres">
-      <form class="search" (ngSubmit)="appliquerFiltres()">
-        <label class="field field--search">
-          <span class="label">Recherche</span>
-          <input
-            class="input"
-            type="search"
-            name="q"
-            autocomplete="off"
-            placeholder="Titre ou auteur : Harry, Tolkien, Austen…"
-            [ngModel]="filtres().q"
-            (ngModelChange)="filtres.update(f => ({ ...f, q: $event }))"
-          />
-        </label>
-        <button class="button button--primary" type="submit" [disabled]="loading()">Rechercher</button>
-      </form>
+      <section class="catalogue__entete">
+        <p class="sur-titre">Catalogue</p>
+        <h1 class="titre-page">Trouvez votre prochaine lecture</h1>
+        <p class="texte-doux catalogue__introduction">
+          Parcourez le fonds de la bibliothèque, recherchez un ouvrage et affinez
+          votre sélection par auteur, titre ou année de publication. Chaque fiche
+          indique la disponibilité réelle de l exemplaire.
+        </p>
+      </section>
 
-      <div class="facets">
-        <label class="field">
-          <span class="label">Année</span>
-          <input
-            class="input"
-            type="number"
-            name="annee"
-            min="1000"
-            max="2100"
-            placeholder="Toutes"
-            [ngModel]="filtres().annee"
-            (ngModelChange)="filtres.update(f => ({ ...f, annee: $event }))"
-          />
-        </label>
-
-        <label class="field">
-          <span class="label">Auteur</span>
-          <input
-            class="input"
-            type="text"
-            name="auteur"
-            autocomplete="off"
-            placeholder="Tous"
-            [ngModel]="filtres().auteur"
-            (ngModelChange)="filtres.update(f => ({ ...f, auteur: $event }))"
-          />
-        </label>
-
-        <label class="field">
-          <span class="label">Titre</span>
-          <input
-            class="input"
-            type="text"
-            name="titre"
-            autocomplete="off"
-            placeholder="Tous"
-            [ngModel]="filtres().titre"
-            (ngModelChange)="filtres.update(f => ({ ...f, titre: $event }))"
-          />
-        </label>
-
-        <button
-          class="button button--ghost"
-          type="button"
-          (click)="reinitialiserFiltres()"
-          [disabled]="loading()"
-        >
-          Réinitialiser
-        </button>
-      </div>
-    </section>
-
-    @if (loading()) {
-      <p class="state">Chargement du catalogue… première visite : 10 à 15 s.</p>
-    } @else if (error(); as message) {
-      <div class="state state--error">
-        <p>{{ message }}</p>
-        <button class="button button--primary" type="button" (click)="appliquerFiltres()">Réessayer</button>
-      </div>
-    } @else if (livres().length === 0) {
-      <div class="state">
-        <p>Aucun livre ne correspond à votre recherche.</p>
-        <button class="button button--ghost" type="button" (click)="reinitialiserFiltres()">
-          Réinitialiser les filtres
-        </button>
-      </div>
-    } @else {
-      <p class="count">
-        {{ totalElements() }} livre{{ totalElements() > 1 ? 's' : '' }} ·
-        page {{ page() }} sur {{ totalPages() }}
-      </p>
-
-      <ul class="grid">
-        @for (livre of livres(); track livre.reference) {
-          <li class="card">
-            <a class="cover" [routerLink]="lienDetail(livre)" [attr.aria-label]="'Voir la fiche de ' + livre.titre">
-              @if (hasCover(livre)) {
-                <img
-                  class="cover-image"
-                  [src]="livre.coverUrl"
-                  [alt]="'Couverture de ' + livre.titre"
-                  loading="lazy"
-                  (error)="markCoverBroken(livre)"
-                />
-              } @else {
-                <span class="cover-placeholder">Pas de couverture</span>
-              }
-            </a>
-
-            <div class="card-body">
-              <h2 class="title">
-                <a class="title-link" [routerLink]="lienDetail(livre)">{{ livre.titre }}</a>
-              </h2>
-              <p class="auteur">{{ livre.auteur }}</p>
-              <p class="annee">
-                {{ livre.anneePublication ? livre.anneePublication : 'Année inconnue' }}
-              </p>
-
-              <span
-                class="badge"
-                [class.badge--libre]="livre.statut === 'LIBRE'"
-                [class.badge--reserve]="livre.statut === 'RESERVE'"
-              >
-                {{ livre.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
-              </span>
-
-              <p class="disponibilite">
-                @if (livre.statut === 'RESERVE' && dateFormatee(livre.dateDisponibilite); as date) {
-                  Disponible le {{ date }}
-                } @else if (livre.statut === 'RESERVE') {
-                  Réservé
-                } @else {
-                  Disponible maintenant
-                }
-              </p>
-            </div>
-          </li>
-        }
-      </ul>
-
-      @if (totalPages() > 1) {
-        <nav class="pagination" aria-label="Pagination du catalogue">
-          <button
-            class="button button--page"
-            type="button"
-            (click)="changerPage(page() - 1)"
-            [disabled]="pageCourante()"
-          >
-            ‹ Précédent
+      <section class="filtres" aria-label="Recherche et filtres">
+        <form class="recherche" (ngSubmit)="appliquerFiltres()">
+          <label class="field recherche__champ">
+            <span class="label">Recherche</span>
+            <input
+              class="input"
+              type="search"
+              name="q"
+              autocomplete="off"
+              placeholder="Titre ou auteur : Harry, Tolkien, Austen…"
+              [ngModel]="filtres().q"
+              (ngModelChange)="filtres.update(f => ({ ...f, q: $event }))"
+            />
+          </label>
+          <button class="button button--primary recherche__valider" type="submit" [disabled]="loading()">
+            Rechercher
           </button>
+        </form>
 
-          @for (numero of pages(); track numero) {
+        <div class="facettes">
+          <label class="field">
+            <span class="label">Année</span>
+            <input
+              class="input"
+              type="number"
+              name="annee"
+              min="1000"
+              max="2100"
+              placeholder="Toutes"
+              [ngModel]="filtres().annee"
+              (ngModelChange)="filtres.update(f => ({ ...f, annee: $event }))"
+            />
+          </label>
+
+          <label class="field">
+            <span class="label">Auteur</span>
+            <input
+              class="input"
+              type="text"
+              name="auteur"
+              autocomplete="off"
+              placeholder="Tous"
+              [ngModel]="filtres().auteur"
+              (ngModelChange)="filtres.update(f => ({ ...f, auteur: $event }))"
+            />
+          </label>
+
+          <label class="field">
+            <span class="label">Titre</span>
+            <input
+              class="input"
+              type="text"
+              name="titre"
+              autocomplete="off"
+              placeholder="Tous"
+              [ngModel]="filtres().titre"
+              (ngModelChange)="filtres.update(f => ({ ...f, titre: $event }))"
+            />
+          </label>
+
+          <button
+            class="button button--ghost"
+            type="button"
+            (click)="reinitialiserFiltres()"
+            [disabled]="loading()"
+          >
+            Réinitialiser
+          </button>
+        </div>
+      </section>
+
+      @if (loading()) {
+        <div class="grille grille--squelette" aria-hidden="true">
+          @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+            <div class="squelette carte-squelette">
+              <div class="squelette__barre" style="height: 100%"></div>
+            </div>
+          }
+        </div>
+        <p class="sr-only">Chargement du catalogue en cours…</p>
+      } @else if (error(); as message) {
+        <div class="state state--error">
+          <p>{{ message }}</p>
+          <button class="button button--primary" type="button" (click)="appliquerFiltres()">Réessayer</button>
+        </div>
+      } @else if (livres().length === 0) {
+        <div class="state">
+          <p>Aucun livre ne correspond a votre recherche.</p>
+          <button class="button button--ghost" type="button" (click)="reinitialiserFiltres()">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      } @else {
+        <div class="grille-entete">
+          <h2 class="sr-only">Résultats</h2>
+          <p class="grille-entete__compte">
+            <strong>{{ totalElements() }}</strong> livre{{ totalElements() > 1 ? 's' : '' }}
+            <span aria-hidden="true">·</span> page {{ page() }} sur {{ totalPages() }}
+          </p>
+        </div>
+
+        <ul class="grille">
+          @for (livre of livres(); track livre.reference) {
+            <li class="carte">
+              <a class="carte__cover" [routerLink]="lienDetail(livre)" [attr.aria-label]="'Voir la fiche de ' + livre.titre">
+                @if (hasCover(livre)) {
+                  <img
+                    class="carte__image"
+                    [src]="livre.coverUrl"
+                    [alt]="'Couverture de ' + livre.titre"
+                    loading="lazy"
+                    (error)="markCoverBroken(livre)"
+                  />
+                } @else {
+                  <span class="cover-placeholder">Pas de couverture</span>
+                }
+              </a>
+
+              <div class="carte__corps">
+                <h3 class="carte__titre">
+                  <a class="carte__lien" [routerLink]="lienDetail(livre)">{{ livre.titre }}</a>
+                </h3>
+                <p class="carte__auteur">{{ livre.auteur }}</p>
+                <p class="carte__annee">
+                  {{ livre.anneePublication ? livre.anneePublication : 'Année inconnue' }}
+                </p>
+
+                <span
+                  class="badge"
+                  [class.badge--libre]="livre.statut === 'LIBRE'"
+                  [class.badge--reserve]="livre.statut === 'RESERVE'"
+                >
+                  {{ livre.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
+                </span>
+
+                <p class="carte__dispo">
+                  @if (livre.statut === 'RESERVE' && dateFormatee(livre.dateDisponibilite); as date) {
+                    Disponible le {{ date }}
+                  } @else if (livre.statut === 'RESERVE') {
+                    Réservé
+                  } @else {
+                    Disponible maintenant
+                  }
+                </p>
+              </div>
+            </li>
+          }
+        </ul>
+
+        @if (totalPages() > 1) {
+          <nav class="pagination" aria-label="Pagination du catalogue">
             <button
               class="button button--page"
               type="button"
-              (click)="changerPage(numero)"
-              [class.button--active]="numero === page()"
-              [attr.aria-current]="numero === page() ? 'page' : null"
+              (click)="changerPage(page() - 1)"
+              [disabled]="pageCourante()"
+              aria-label="Page precedente"
             >
-              {{ numero }}
+              <span aria-hidden="true">‹</span>
             </button>
-          }
 
-          <button
-            class="button button--page"
-            type="button"
-            (click)="changerPage(page() + 1)"
-            [disabled]="pageDerniere()"
-          >
-            Suivant ›
-          </button>
-        </nav>
+            @for (numero of pages(); track numero) {
+              <button
+                class="button button--page"
+                type="button"
+                (click)="changerPage(numero)"
+                [class.button--page-active]="numero === page()"
+                [attr.aria-current]="numero === page() ? 'page' : null"
+                [attr.aria-label]="'Page ' + numero"
+              >
+                {{ numero }}
+              </button>
+            }
+
+            <button
+              class="button button--page"
+              type="button"
+              (click)="changerPage(page() + 1)"
+              [disabled]="pageDerniere()"
+              aria-label="Page suivante"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </nav>
+        }
       }
-    }
   </main>
 </div>

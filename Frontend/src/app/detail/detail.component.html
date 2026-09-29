@@ -1,237 +1,234 @@
 <div class="app">
-  <header class="detail-header">
-    <div class="container">
-      <a class="retour" routerLink="/">
-        <span aria-hidden="true">←</span> Retour au catalogue
-      </a>
-    </div>
-  </header>
-
   <main class="container">
-    @if (chargement()) {
-      <div class="squelette" aria-hidden="true">
-        <div class="squelette__barre" style="height: 26rem"></div>
-      </div>
-      <p class="state">Chargement de la fiche… première visite : 5 à 10 s.</p>
-    } @else if (erreur(); as message) {
-      <div class="state state--error">
-        <p>{{ message }}</p>
-        <button class="button button--primary" type="button" (click)="retour()">
-          Retour au catalogue
-        </button>
-      </div>
-    } @else if (livre(); as item) {
-      <!-- Couverture à gauche, informations à droite -->
-      <article class="fiche">
-        <div class="fiche__cover">
-          @if (item.coverUrl && !coverBroken()) {
-            <img
-              class="couverture"
-              [src]="item.coverUrl"
-              [alt]="'Couverture de ' + item.titre"
-              (error)="coverBroken.set(true)"
-            />
-          } @else {
-            <span class="couverture-placeholder">Pas de couverture</span>
-          }
+      <nav class="fil-ariane" aria-label="Fil d'ariane">
+        <a class="fil-ariane__lien" routerLink="/">
+          <svg class="fil-ariane__fleche" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+          Catalogue
+        </a>
+      </nav>
+
+      @if (chargement()) {
+        <div class="squelette" aria-hidden="true">
+          <div class="squelette__barre" style="height: 26rem"></div>
         </div>
-
-        <div class="fiche__infos">
-          <h1 class="titre">{{ item.titre }}</h1>
-
-          <p class="auteur">{{ item.auteur ?? 'Auteur inconnu' }}</p>
-
-          <div class="badges">
-            <span
-              class="badge"
-              [class.badge--libre]="item.statut === 'LIBRE'"
-              [class.badge--reserve]="item.statut === 'RESERVE'"
-            >
-              {{ item.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
-            </span>
-
-            <span class="dispo">
-              @if (item.statut === 'RESERVE' && dateFormatee(item.dateDisponibilite); as date) {
-                Disponible le {{ date }}
-              } @else if (item.statut === 'RESERVE') {
-                Réservé
-              } @else {
-                Disponible maintenant
-              }
-            </span>
-          </div>
-
-          <dl class="champs">
-            <div class="champ">
-              <dt class="champ__label">Année</dt>
-              <dd class="champ__valeur" [class.champ__valeur--vide]="!item.anneePublication">
-                {{ item.anneePublication ?? 'Non renseignée' }}
-              </dd>
-            </div>
-
-            <div class="champ">
-              <dt class="champ__label">Langue</dt>
-              <dd class="champ__valeur" [class.champ__valeur--vide]="!item.langue">
-                {{ item.langue ?? 'Non renseignée' }}
-              </dd>
-            </div>
-
-            <div class="champ">
-              <dt class="champ__label">Pages</dt>
-              <dd class="champ__valeur" [class.champ__valeur--vide]="!item.nombrePages">
-                {{ item.nombrePages ?? 'Non renseigné' }}
-              </dd>
-            </div>
-
-            <div class="champ">
-              <dt class="champ__label">Date de publication</dt>
-              <dd class="champ__valeur" [class.champ__valeur--vide]="!item.datePublication">
-                {{ item.datePublication ?? 'Non renseignée' }}
-              </dd>
-            </div>
-
-            @if (item.isbn.length > 0) {
-              <div class="champ champ--large">
-                <dt class="champ__label">ISBN</dt>
-                <dd class="champ__valeur">{{ item.isbn.join(' · ') }}</dd>
-              </div>
-            }
-          </dl>
-
-          @if (item.genres.length > 0) {
-            <div class="genres">
-              <span class="genres__label">Genres</span>
-              <div class="genres__liste">
-                @for (genre of item.genres; track genre) {
-                  <span
-                    class="genre"
-                    [class.genre--actif]="item.genresRecommandation.includes(genre)"
-                  >
-                    {{ genre }}
-                  </span>
-                }
-              </div>
-            </div>
-          }
-
-          <!--
-            Bouton « Réserver » : présent dans le wireframe mais inactif.
-            La réservation n'est pas dans ce sprint, on le dit explicitement
-            plutôt que de laisser croire à un bug.
-          -->
-          <div class="actions">
-            <button
-              class="button button--reserve"
-              type="button"
-              disabled
-              title="La réservation en ligne n'est pas encore disponible"
-            >
-              Réserver
-            </button>
-            <p class="actions__note">
-              La réservation en ligne arrive dans un prochain sprint.
-            </p>
-          </div>
+        <p class="state">Chargement de la fiche… première visite : 5 à 10 s.</p>
+      } @else if (erreur(); as message) {
+        <div class="state state--error">
+          <p>{{ message }}</p>
+          <button class="button button--primary" type="button" (click)="retour()">
+            Retour au catalogue
+          </button>
         </div>
-      </article>
-
-      <!-- Description -->
-      <section class="description">
-        <h2 class="section-titre">Description</h2>
-        @if (item.description) {
-          <p class="description__texte">{{ item.description }}</p>
-          <p class="description__source">
-            Description fournie par Open Library, en anglais.
-          </p>
-        } @else {
-          <p class="description__vide">
-            Aucune description disponible pour cet ouvrage.
-          </p>
-        }
-      </section>
-
-      <!-- Recommandations : 10 max, 5 visibles, flèches pour défiler -->
-      <section class="recommandations" aria-label="Livres recommandés">
-        <div class="recommandations__entete">
-          <div>
-            <h2 class="section-titre">Livres recommandés</h2>
-            @if (genrePrincipal(); as genre) {
-              <p class="recommandations__criteres">
-                Sélectionnés sur le genre
-                <span class="genre genre--actif">{{ genre }}</span>
-              </p>
+      } @else if (livre(); as item) {
+        <!-- Couverture à gauche, informations à droite -->
+        <article class="fiche">
+          <div class="fiche__cover">
+            @if (item.coverUrl && !coverBroken()) {
+              <img
+                class="couverture"
+                [src]="item.coverUrl"
+                [alt]="'Couverture de ' + item.titre"
+                (error)="coverBroken.set(true)"
+              />
             } @else {
-              <p class="recommandations__criteres">Sélectionnés selon leur genre</p>
+              <span class="couverture-placeholder">Pas de couverture</span>
             }
           </div>
 
-          <div class="carousel" role="group" aria-label="Navigation des recommandations">
-            <button
-              class="carousel__bouton"
-              type="button"
-              (click)="defiler(-1)"
-              [disabled]="!peutDefiler(-1)"
-              aria-label="Livres recommandés précédents"
-            >
-              ‹
-            </button>
-            <button
-              class="carousel__bouton"
-              type="button"
-              (click)="defiler(1)"
-              [disabled]="!peutDefiler(1)"
-              aria-label="Livres recommandés suivants"
-            >
-              ›
-            </button>
-          </div>
-        </div>
+          <div class="fiche__infos">
+            <h1 class="titre">{{ item.titre }}</h1>
 
-        @if (chargementReco()) {
-          <div class="carousel__squelette" aria-hidden="true">
-            @for (i of [1, 2, 3, 4, 5]; track i) {
-              <div class="squelette carte-squelette">
-                <div class="squelette__barre" style="height: 100%"></div>
+            <p class="auteur">{{ item.auteur ?? 'Auteur inconnu' }}</p>
+
+            <div class="badges">
+              <span
+                class="badge"
+                [class.badge--libre]="item.statut === 'LIBRE'"
+                [class.badge--reserve]="item.statut === 'RESERVE'"
+              >
+                {{ item.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
+              </span>
+
+              <span class="dispo">
+                @if (item.statut === 'RESERVE' && dateFormatee(item.dateDisponibilite); as date) {
+                  Disponible le {{ date }}
+                } @else if (item.statut === 'RESERVE') {
+                  Réservé
+                } @else {
+                  Disponible maintenant
+                }
+              </span>
+            </div>
+
+            <dl class="champs">
+              <div class="champ">
+                <dt class="champ__label">Année</dt>
+                <dd class="champ__valeur" [class.champ__valeur--vide]="!item.anneePublication">
+                  {{ item.anneePublication ?? 'Non renseignée' }}
+                </dd>
               </div>
-            }
+
+              <div class="champ">
+                <dt class="champ__label">Langue</dt>
+                <dd class="champ__valeur" [class.champ__valeur--vide]="!item.langue">
+                  {{ item.langue ?? 'Non renseignée' }}
+                </dd>
+              </div>
+
+              <div class="champ">
+                <dt class="champ__label">Pages</dt>
+                <dd class="champ__valeur" [class.champ__valeur--vide]="!item.nombrePages">
+                  {{ item.nombrePages ?? 'Non renseigné' }}
+                </dd>
+              </div>
+
+              <div class="champ">
+                <dt class="champ__label">Date de publication</dt>
+                <dd class="champ__valeur" [class.champ__valeur--vide]="!item.datePublication">
+                  {{ item.datePublication ?? 'Non renseignée' }}
+                </dd>
+              </div>
+
+              <!--
+                L'ISBN partage la ligne de la date de publication : c'est une
+                information de même nature (identifiants de l'édition) et un
+                ISBN sur une ligne entière creusait un vide dans la grille.
+              -->
+              @if (item.isbn.length > 0) {
+                <div class="champ">
+                  <dt class="champ__label">ISBN</dt>
+                  <dd class="champ__valeur">{{ item.isbn.join(' · ') }}</dd>
+                </div>
+              }
+
+              <!--
+                Le genre tient la meme place et la meme forme que les autres
+                champs de la fiche : un libelle au-dessus, la valeur en dessous.
+                Pas de pastille ni de bloc a part.
+              -->
+              <div class="champ">
+                <dt class="champ__label">Genre</dt>
+                <dd class="champ__valeur" [class.champ__valeur--vide]="item.genres.length === 0">
+                  {{ item.genres.join(' · ') || 'Non renseigné' }}
+                </dd>
+              </div>
+            </dl>
+
+            <!--
+              Bouton « Réserver » : présent dans le wireframe mais inactif tant
+              que la réservation en ligne n'est pas implémentée.
+            -->
+            <div class="actions">
+              <button
+                class="button button--reserve"
+                type="button"
+                disabled
+                title="La réservation en ligne n'est pas encore disponible"
+              >
+                Réserver
+              </button>
+            </div>
           </div>
-        } @else if (erreurReco()) {
-          <p class="state state--error">{{ erreurReco() }}</p>
-        } @else if (recommandations().length === 0) {
-          <p class="state">Aucune recommandation disponible pour cet ouvrage.</p>
-        } @else {
-          <ul class="carousel__piste">
-            @for (livre of fenetre(); track livre.reference) {
-              <li class="mini-carte">
-                <a class="mini-carte__cover" [routerLink]="lienDetail(livre)">
-                  @if (hasCover(livre)) {
-                    <img
-                      class="mini-carte__image"
-                      [src]="livre.coverUrl"
-                      [alt]="'Couverture de ' + livre.titre"
-                      loading="lazy"
-                      (error)="markCoverBroken(livre)"
-                    />
-                  } @else {
-                    <span class="mini-carte__placeholder">Pas de couverture</span>
-                  }
-                </a>
-                <a class="mini-carte__titre" [routerLink]="lienDetail(livre)">
-                  {{ livre.titre }}
-                </a>
-                <p class="mini-carte__auteur">{{ livre.auteur }}</p>
-                <span
-                  class="badge"
-                  [class.badge--libre]="livre.statut === 'LIBRE'"
-                  [class.badge--reserve]="livre.statut === 'RESERVE'"
-                >
-                  {{ livre.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
-                </span>
-              </li>
-            }
-          </ul>
-        }
-      </section>
-    }
+        </article>
+
+        <!-- Description -->
+        <section class="description">
+          <h2 class="section-titre">Description</h2>
+          @if (item.description) {
+            <p class="description__texte">{{ item.description }}</p>
+          } @else {
+            <p class="description__vide">
+              Aucune description disponible pour cet ouvrage.
+            </p>
+          }
+        </section>
+
+        <!-- Recommandations : 8 max, 4 visibles, fleches pour defiler -->
+        <section class="recommandations" aria-label="Livres recommandés">
+          <div class="recommandations__entete">
+            <p class="recommandations__intro">{{ introduction }}</p>
+
+            <div class="carousel" role="group" aria-label="Navigation des recommandations">
+              <button
+                class="carousel__bouton"
+                type="button"
+                (click)="pagePrecedente()"
+                [disabled]="!peutPrecedent()"
+                aria-label="Voir les livres précédents"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M15 5l-7 7 7 7" />
+                </svg>
+              </button>
+              <button
+                class="carousel__bouton"
+                type="button"
+                (click)="pageSuivante()"
+                [disabled]="!peutSuivant()"
+                aria-label="Voir les livres suivants"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          @if (chargementReco()) {
+            <div class="carousel__squelette" aria-hidden="true">
+              @for (i of [1, 2, 3, 4]; track i) {
+                <div class="squelette carte-squelette">
+                  <div class="squelette__barre" style="height: 100%"></div>
+                </div>
+              }
+            </div>
+          } @else if (erreurReco()) {
+            <p class="state state--error">{{ erreurReco() }}</p>
+          } @else if (recommandations().length === 0) {
+            <p class="state">Aucune recommandation disponible pour cet ouvrage.</p>
+          } @else {
+            <!--
+              La fenetre ne montre qu'une page de livres et masque le reste
+              (`overflow: hidden`). La piste contient les huit recommandations et
+              le composant la decale d'une fenetre entiere a chaque clic, ce qui
+              laisse quatre cartes entieres a l'ecran et jamais une carte coupee.
+            -->
+            <div class="piste" #piste>
+              <ul class="carousel__piste" [style.transform]="'translateX(-' + decalage() + 'px)'">
+                @for (livre of recommandations(); track livre.reference) {
+                  <li class="mini-carte">
+                    <a class="mini-carte__cover" [routerLink]="lienDetail(livre)">
+                      @if (hasCover(livre)) {
+                        <img
+                          class="mini-carte__image"
+                          [src]="livre.coverUrl"
+                          [alt]="'Couverture de ' + livre.titre"
+                          loading="lazy"
+                          (error)="markCoverBroken(livre)"
+                        />
+                      } @else {
+                        <span class="mini-carte__placeholder">Pas de couverture</span>
+                      }
+                    </a>
+                    <a class="mini-carte__titre" [routerLink]="lienDetail(livre)">
+                      {{ livre.titre }}
+                    </a>
+                    <p class="mini-carte__auteur">{{ livre.auteur }}</p>
+                    <span
+                      class="badge"
+                      [class.badge--libre]="livre.statut === 'LIBRE'"
+                      [class.badge--reserve]="livre.statut === 'RESERVE'"
+                    >
+                      {{ livre.statut === 'LIBRE' ? 'Libre' : 'Réservé' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </section>
+      }
   </main>
 </div>

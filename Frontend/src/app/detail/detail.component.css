@@ -1,44 +1,85 @@
-.detail-header {
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--surface);
+/* ==================================================================
+   FICHE D'UN LIVRE
+   ================================================================== */
+
+/*
+ * Fil d'ariane.
+ *
+ * Il remplace l'ancien bandeau « Retour au catalogue ». Depuis que
+ * l'en-tete global existe, une barre dediee pour un seul lien serait
+ * du gaspillage de hauteur : un lien discret au-dessus du contenu fait
+ * le meme travail sans couper l'ecran en deux.
+ */
+.fil-ariane {
+  display: flex;
+  align-items: center;
+  padding: var(--espace-4) 0 0;
 }
 
-.retour {
+.fil-ariane__lien {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-  font-weight: 500;
+  gap: var(--espace-2);
+  color: var(--encre-2);
+  font-size: var(--corps-2);
+  font-weight: 550;
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--transition-rapide);
 }
 
-.retour:hover {
-  color: var(--accent);
+.fil-ariane__lien:hover {
+  color: var(--primaire);
 }
 
-.retour:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 3px;
+/*
+ * La fleche est un chevron SVG, pas un caractere : le glyphe « ‹ » a une
+ * chasse variable selon la police et se positionne mal sur la ligne de
+ * base. Ici, le trait est a 1.6px comme tous les autres icones du site.
+ */
+.fil-ariane__fleche {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--transition-rapide);
 }
 
-/* -------------------------------------------------- */
-/* Fiche : couverture à gauche, informations à droite  */
-/* -------------------------------------------------- */
+.fil-ariane__lien:hover .fil-ariane__fleche {
+  transform: translateX(-2px);
+}
 
+/* ------------------------------------------------------------------
+   Fiche : couverture a gauche, informations a droite
+   ------------------------------------------------------------------ */
+
+/*
+ * `align-self: start` empeche la couverture de s'etirer sur la hauteur
+ * des informations : sans cela, une fiche sans description produirait
+ * une couverture enorme et disproportionnee.
+ */
 .fiche {
   display: grid;
   grid-template-columns: 260px 1fr;
-  gap: 2.5rem;
-  margin: 2.5rem 0 3rem;
-  padding: 2rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  gap: var(--espace-6);
+  margin: var(--espace-5) 0 var(--espace-6);
+  padding: var(--espace-6);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
   background-color: var(--surface);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--ombre-fixe);
+}
+
+/*
+ * `min-width: 0` sur la colonne de texte : c'est elle qui recoit le titre
+ * et la description, les deux pouvant etre tres longs. Sans cette regle,
+ * un titre sans espace force la colonne a s'elargir et la fiche deborde
+ * de l'ecran.
+ */
+.fiche__infos {
+  min-width: 0;
 }
 
 .fiche__cover {
@@ -47,58 +88,80 @@
   justify-content: center;
   align-self: start;
   aspect-ratio: 2 / 3;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background-color: var(--surface-alt);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background-color: var(--surface-2);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  /*
+   * Ombre portee sur la couverture seule : c'est le seul element de la
+   * fiche qui doit paraitre materiel, les autres restent des surfaces
+   * plates. Une ombre plus dense donnerait l'impression d'une
+   * surimpression.
+   */
+  box-shadow: var(--ombre-3);
 }
 
 .couverture {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .couverture-placeholder {
-  color: var(--ink-faint);
-  font-size: 0.9rem;
-  padding: 1.5rem;
+  padding: var(--espace-5);
+  color: var(--encre-4);
+  font-size: var(--corps-2);
   text-align: center;
 }
 
 .titre {
-  margin: 0 0 0.4rem;
-  font-size: 1.9rem;
-  line-height: 1.22;
-  letter-spacing: -0.02em;
+  margin: 0 0 var(--espace-2);
+  font-size: var(--titre-1);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--interlettrage-titre);
+  /* `balance` repartit les lignes d'un titre long : sans lui, la
+     derniere ligne ne contient souvent qu'un mot isole. */
+  text-wrap: balance;
 }
 
 .auteur {
-  margin: 0 0 1rem;
-  color: var(--ink-soft);
-  font-size: 1.05rem;
+  margin: 0 0 var(--espace-4);
+  color: var(--encre-2);
+  font-size: 1.1rem;
 }
 
 .badges {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: var(--espace-3);
+  margin-bottom: var(--espace-5);
+  padding-bottom: var(--espace-4);
+  border-bottom: 1px solid var(--bordure);
 }
 
 .dispo {
-  color: var(--ink-soft);
-  font-size: 0.9rem;
+  color: var(--encre-2);
+  font-size: var(--corps-2);
 }
+
+/* ------------------------------------------------------------------
+   Champs
+   ------------------------------------------------------------------
+   Cinq champs (annee, langue, pages, date, ISBN) plus le genre. Sur
+   quatre colonnes, le cinquieme resterait seul sur sa ligne et
+   occuperait toute la largeur, ce qui est laid pour un ISBN. Trois
+   colonnes les repartissent en 3 + 2 + 1 : la date et l'ISBN se
+   retrouvent cotes a cotes, comme les deux identifiants de l'edition
+   qu'ils sont.
+   ------------------------------------------------------------------ */
 
 .champs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.75rem;
-  margin: 0 0 1.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espace-3);
+  margin: 0 0 var(--espace-5);
 }
 
 .champs dt,
@@ -106,179 +169,295 @@
   margin: 0;
 }
 
-.genres {
-  margin-bottom: 1.75rem;
+/*
+ * Champ en lecture seule : un pave gris tres clair. Le fond n'est pas
+ * decoratif, il distingue l'information figee de l'action possible.
+ */
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-1);
+  min-width: 0;
+  padding: var(--espace-3);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background-color: var(--surface-2);
 }
 
-.genres__label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--ink-faint);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+.champ__label {
+  color: var(--encre-3);
+  font-size: var(--micro);
+  font-weight: 650;
+  letter-spacing: var(--interlettrage-label);
   text-transform: uppercase;
 }
 
-.genres__liste {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+.champ__valeur {
+  color: var(--encre);
+  font-size: var(--corps-2);
+  font-weight: 550;
+  word-break: break-word;
+}
+
+.champ__valeur--vide {
+  color: var(--encre-4);
+  font-style: italic;
+  font-weight: 400;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.9rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
+  gap: var(--espace-3);
+  padding-top: var(--espace-5);
+  border-top: 1px solid var(--bordure);
 }
 
-.actions__note {
-  margin: 0;
-  color: var(--ink-faint);
-  font-size: 0.82rem;
-}
-
-/* -------------------------------------------------- */
-/* Description                                       */
-/* -------------------------------------------------- */
+/* ------------------------------------------------------------------
+   Description
+   ------------------------------------------------------------------ */
 
 .description {
-  margin: 0 0 3rem;
-  padding: 1.75rem 2rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  margin: 0 0 var(--espace-7);
+  padding: var(--espace-5) var(--espace-6);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
   background-color: var(--surface);
 }
 
 .section-titre {
-  margin: 0 0 0.75rem;
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
+  margin: 0 0 var(--espace-3);
+  font-size: var(--titre-2);
+  font-weight: 650;
+  letter-spacing: var(--interlettrage-titre);
 }
 
 .description__texte {
   margin: 0;
-  color: var(--ink);
-  font-size: 0.98rem;
-  line-height: 1.7;
+  color: var(--encre);
+  font-size: var(--corps);
+  line-height: 1.75;
   /* Les descriptions Open Library contiennent des sauts de ligne bruts. */
   white-space: pre-line;
 }
 
 .description__vide {
   margin: 0;
-  color: var(--ink-faint);
+  color: var(--encre-4);
   font-style: italic;
 }
 
-.description__source {
-  margin: 1rem 0 0;
-  color: var(--ink-faint);
-  font-size: 0.78rem;
-}
-
-/* -------------------------------------------------- */
-/* Carrousel de recommandations                      */
-/* -------------------------------------------------- */
+/* ==================================================================
+   CARROUSEL DE RECOMMANDATIONS
+   ------------------------------------------------------------------
+   La logique de pagination vit dans detail.component.ts : elle mesure
+   la fenetre et decale la piste d'une fenetre entiere. Cette section ne
+   decrit que la mise en page, et deux invariants :
+     - le nombre de cartes visibles est porte par `--cartes` ;
+     - la carte ne bouge pas au survol.
+   ================================================================== */
 
 .recommandations {
-  margin: 0 0 4rem;
+  margin: 0 0 var(--espace-8);
 }
 
+/*
+ * Les fleches sont alignees sur la ligne du texte, pas en haut du bloc :
+ * elles se posent au niveau de l'oeil, ce qui evite un bloc de boutons
+ * qui domine une phrase d'une ligne.
+ */
 .recommandations__entete {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: var(--espace-4);
+  margin-bottom: var(--espace-4);
 }
 
-.recommandations__criteres {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+.recommandations__intro {
   margin: 0;
-  color: var(--ink-soft);
-  font-size: 0.9rem;
+  color: var(--encre-2);
+  font-size: var(--corps);
+  line-height: 1.6;
 }
 
 .carousel {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--espace-2);
   flex-shrink: 0;
 }
 
+/*
+ * Bouton de navigation.
+ *
+ * Disque au trait fin, blanc au repos : les livres sont le contenu, un
+ * aplat vert a cote d'eux detournerait l'oeil. La couleur d'accent
+ * n'arrive qu'au survol.
+ *
+ * Le contour passe de 1px a 1.5px au survol au lieu que la taille de la
+ * boite change : un bouton qui s'agrandit decale son voisin et fait
+ * vibrer la section.
+ */
 .carousel__bouton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--line);
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--bordure);
   border-radius: 50%;
   background-color: var(--surface);
-  color: var(--ink);
-  font-size: 1.4rem;
-  line-height: 1;
+  color: var(--encre-2);
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    background-color var(--transition-rapide),
+    border-color var(--transition-rapide),
+    color var(--transition-rapide),
+    box-shadow var(--transition-rapide);
+}
+
+.carousel__bouton svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .carousel__bouton:not(:disabled):hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
+  background-color: var(--primaire-clair);
+  border-color: var(--primaire-bord);
+  color: var(--primaire);
+  box-shadow: var(--ombre-2);
+}
+
+.carousel__bouton:not(:disabled):active {
+  background-color: var(--primaire);
+  border-color: var(--primaire);
   color: #ffffff;
 }
 
-.carousel__bouton:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
 .carousel__bouton:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--primaire);
   outline-offset: 2px;
 }
 
-/* 5 cartes visibles, la piste défile horizontalement. */
-.carousel__piste,
-.carousel__squelette {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: calc((100% - 4 * 1.25rem) / 5);
-  gap: 1.25rem;
+/*
+ * Bouton inactif : il s'efface au lieu de disparaitre, pour que la
+ * position des deux fleches reste stable et que la section ne paraisse
+ * pas amputee en debut ou fin de piste.
+ */
+.carousel__bouton:disabled {
+  cursor: not-allowed;
+  color: var(--encre-4);
+  background-color: var(--surface);
+  border-color: var(--bordure);
+  opacity: 0.5;
+}
+
+/* ------------------------------------------------------------------
+   Fenetre et piste
+   ------------------------------------------------------------------ */
+
+/*
+ * La fenetre ne montre qu'une page de livres et masque tout le reste :
+ * c'est elle qui porte `overflow: hidden`, donc aucun livre au-dela de
+ * la page courante ne peut deborder sur les cotes, meme a moitie.
+ */
+.piste {
+  --gap-piste: var(--espace-4);
+  /*
+   * `min-width: 0` autorise l'element a se retrecir sous la largeur de
+   * son contenu. Sans lui, la piste, qui contient huit cartes,
+   * imposerait sa largeur au parent et ferait deborder toute la page
+   * horizontalement.
+   */
+  min-width: 0;
+  /*
+   * Nombre de cartes entieres visibles par page. Les media queries
+   * ci-dessous le changent, et le composant releve la valeur reelle
+   * apres le rendu pour recaler la piste.
+   */
+  --cartes: 4;
+  overflow: hidden;
+  /*
+   * Aucun defilement natif ici. La piste est decalee en pixels par le
+   * composant : laisser le navigateur defiler offrirait des positions
+   * intermedaires, et une carte deborderait la page.
+   */
+}
+
+.carousel__piste {
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap-piste);
   margin: 0;
   padding: 0;
   list-style: none;
-  overflow: hidden;
+  /*
+   * La piste est decalee d'une fenetre entiere a chaque clic. La duree
+   * est plus longue que pour un simple changement d'etat : c'est un
+   * deplacement, et il doit se lire.
+   */
+  transition: transform var(--transition-douce);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .carousel__piste {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Carte du carrousel
+   ------------------------------------------------------------------
+   Largeur : (fenetre - n gouttieres) / n.
+
+   Le facteur `--cartes` place n cartes et n gouttieres dans la fenetre,
+   la derniere gouttiere faisant office d'espace avant la premiere carte
+   de la page suivante. C'est ce qui garantit qu'aucune carte n'est
+   coupee et qu'un cran vaut exactement la largeur de la fenetre.
+
+   `flex: 0 0` est indispensable : sans lui, `flex-shrink` compresserait
+   les cartes pour les faire rentrer et la fenetre en montrerait plus
+   de quatre.
+   ------------------------------------------------------------------ */
+
 .mini-carte {
+  flex: 0 0 calc((100% - var(--cartes) * var(--gap-piste)) / var(--cartes));
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.3rem;
-  padding: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: var(--espace-1);
+  padding: var(--espace-2);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-moyen);
   background-color: var(--surface);
   transition:
-    box-shadow 0.18s ease,
-    transform 0.18s ease,
-    border-color 0.18s ease;
+    border-color var(--transition-rapide),
+    box-shadow var(--transition-rapide);
 }
 
+/*
+ * AUCUNE transformation au survol.
+ *
+ * La carte du catalogue ne grandit plus, et celle-ci non plus. Dans un
+ * carrousel, un `translateY` ou un `scale` decale verticalement la carte
+ * par rapport a ses voisines et fait bouger la rangee entiere — l'effet
+ * « saut » que le survol doit justement eviter. Seule l'ombre se
+ * densifie, et la couverture zoome de 3 %.
+ */
 .mini-carte:hover {
-  transform: translateY(-3px);
-  border-color: rgba(31, 75, 143, 0.3);
-  box-shadow: var(--shadow-md);
+  border-color: var(--primaire-bord);
+  box-shadow: var(--ombre-3);
+}
+
+.mini-carte:focus-within {
+  border-color: var(--primaire-bord);
+  box-shadow: var(--ombre-3);
 }
 
 .mini-carte__cover {
@@ -287,9 +466,9 @@
   justify-content: center;
   width: 100%;
   aspect-ratio: 2 / 3;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--espace-2);
   border-radius: 6px;
-  background-color: var(--surface-alt);
+  background-color: var(--surface-2);
   overflow: hidden;
 }
 
@@ -297,79 +476,127 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transition: transform var(--transition-douce);
+}
+
+.mini-carte:hover .mini-carte__image,
+.mini-carte:focus-within .mini-carte__image {
+  transform: scale(1.03);
 }
 
 .mini-carte__placeholder {
-  color: var(--ink-faint);
-  font-size: 0.75rem;
-  padding: 0.5rem;
+  padding: var(--espace-2);
+  color: var(--encre-4);
+  font-size: var(--micro);
   text-align: center;
 }
 
 .mini-carte__titre {
-  color: var(--ink);
-  font-size: 0.85rem;
-  font-weight: 600;
+  color: var(--encre);
+  font-size: var(--corps-2);
+  font-weight: 650;
   line-height: 1.35;
   text-decoration: none;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color var(--transition-rapide);
 }
 
 .mini-carte__titre:hover {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: var(--primaire);
 }
 
 .mini-carte__auteur {
-  margin: 0 0 0.2rem;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
+  margin: 0;
+  color: var(--encre-2);
+  font-size: var(--petit);
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Le statut est repousse en bas : toutes les cartes de la page se
+   alignent dessus, quelle que soit la longueur du titre. */
+.mini-carte .badge {
+  margin-top: auto;
 }
 
 .carte-squelette {
   aspect-ratio: 2 / 3.4;
 }
 
+/* ------------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------------
+   Le nombre de cartes est declare deux fois, sur `.piste` et sur le
+   conteneur de squelettes : les deux doivent desesperer le meme
+   compte, sinon la grille se recompose quand le chargement se termine
+   et la page saute.
+   ------------------------------------------------------------------ */
+
+/* Grand ecran : quatre livres par page. */
+.piste,
+.carousel__squelette {
+  --cartes: 4;
+}
+
 @media (max-width: 1024px) {
   .fiche {
     grid-template-columns: 200px 1fr;
-    gap: 1.75rem;
-    padding: 1.5rem;
+    gap: var(--espace-5);
+    padding: var(--espace-5);
   }
 
   .titre {
-    font-size: 1.6rem;
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
   }
 
-  /* En dessous de 5 colonnes, on garde la meme largeur de carte pour
-     que la grille reste lisible. */
-  .carousel__piste,
+  /*
+   * Portable : 3 cartes entieres. On prefere une carte un peu plus large
+   * a 4 cartes trop etroites dont le titre tient sur trois lignes.
+   */
+  .piste,
   .carousel__squelette {
-    grid-auto-columns: calc((100% - 3 * 1rem) / 4);
+    --gap-piste: var(--espace-3);
+    --cartes: 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .champs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 720px) {
   .fiche {
     grid-template-columns: 1fr;
+    margin: var(--espace-4) 0 var(--espace-5);
+    padding: var(--espace-4);
   }
 
-  .fiche__cover {
+  /*
+ * `min-width: 0` sur la colonne de texte : c'est elle qui recoit le titre
+ * et la description, les deux pouvant etre tres longs. Sans cette regle,
+ * un titre sans espace force la colonne a s'elargir et la fiche deborde
+ * de l'ecran.
+ */
+.fiche__infos {
+  min-width: 0;
+}
+
+.fiche__cover {
     max-width: 180px;
     margin: 0 auto;
   }
 
-  .titre {
-    font-size: 1.4rem;
+  .description {
+    padding: var(--espace-4);
   }
 
   .recommandations__entete {
@@ -377,9 +604,27 @@
     align-items: flex-start;
   }
 
-  .carousel__piste,
+  /* Tablette : 2 cartes, la couverture garde une largeur lisible. */
+  .piste,
   .carousel__squelette {
-    grid-auto-columns: calc((100% - 2 * 0.75rem) / 3);
-    gap: 0.75rem;
+    --gap-piste: var(--espace-3);
+    --cartes: 2;
+  }
+}
+
+@media (max-width: 460px) {
+  .champs {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Tres petit ecran : une seule carte. En dessous, deux colonnes de
+   * couverture donnent des vignettes trop etroites pour que le titre et
+   * le statut restent lisibles.
+   */
+  .piste,
+  .carousel__squelette {
+    --gap-piste: var(--espace-2);
+    --cartes: 1;
   }
 }

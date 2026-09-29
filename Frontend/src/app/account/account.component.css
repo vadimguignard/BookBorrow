@@ -1,0 +1,60 @@
+/*
+ * Sections personnelles (profil, reservations).
+ *
+ * Elles reprennent le pave de titre du catalogue et la carte d'etat vide du
+ * reste du site. Rien n'est specifique a ces ecrans : c'est la garantie que
+ * les donnees, quand elles arriveront, auront deja leur logement.
+ */
+
+.espace {
+  padding: var(--espace-7) 0 var(--espace-8);
+}
+
+.espace__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  margin-bottom: var(--espace-6);
+}
+
+/*
+ * L'icone est posee dans un disque a fond tres pale et a filet vert : meme
+ * construction que la pastille de statut, ce qui fait lire l'ensemble comme
+ * un etat (« rien a afficher ») plutot que comme une decoration.
+ */
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-4);
+  padding: var(--espace-8) var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  text-align: center;
+}
+
+.etat-vide__signe {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--primaire-bord);
+  border-radius: 50%;
+  background-color: var(--primaire-clair);
+  color: var(--primaire);
+}
+
+.etat-vide__signe svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.etat-vide__texte {
+  color: var(--encre-2);
+}

@@ -1,14 +1,152 @@
-/**
- * Styles globaux.
+/* ==================================================================
+   SYSTEME DE DESIGN
+   ------------------------------------------------------------------
+   Un seul endroit decide de l'apparence de l'application. Toute valeur
+   visuelle passe par un jeton : la palette, la typo, les espacements,
+   les rayons, les ombres et les durees d'animation.
+
+   Regle de maintenance : aucune couleur, aucune ombre et aucune duree
+   en dur dans les composants. Si une valeur n'est pas un jeton, elle
+   appartient a `styles.css`.
+   ================================================================== */
+
+:root {
+  /* ----------------------------------------------------------------
+     PALETTE
+     ----------------------------------------------------------------
+     Le blanc domine (fond a #ffffff). L'encre est un noir verdatre
+     tres desature : un noir pur sur fond blanc est agressif dans un
+     texte long, un noir teinte se lit plus doux.
+
+     La couleur principale est un vert d'epingle profond, choisi pour
+     son statut : il évoque le livre relié et l'institution, sans
+     tomber dans le bleu institutionnel ni dans le vert vif des
+     interfaces de sport. Il n'est employe que sur les elements qui
+     demandent une decision : boutons d'action, liens actifs, focus.
+
+     Les ocres ne servent qu'aux statuts secondaires (« Reserve ») et a
+     l'illustration : ils sont volontairement en retrait du vert pour
+     que les deux familles ne se confondent pas.
+     ---------------------------------------------------------------- */
+  --encre: #16211d;
+  --encre-2: #47534c;
+  --encre-3: #6b7770;
+  --encre-4: #9aa49e;
+
+  --primaire: #1f4a3d;
+  --primaire-fonce: #16382e;
+  --primaire-clair: #e8f0ec;
+  --primaire-bord: rgba(31, 74, 61, 0.24);
+  --primaire-ombre: rgba(31, 74, 61, 0.16);
+
+  --accent: #8a5a2b;
+  --accent-fonce: #6f4822;
+  --accent-bord: rgba(138, 90, 43, 0.22);
+
+  --dispo-fond: #e7f0e9;
+  --dispo-encre: #1d5c3f;
+  --dispo-bord: rgba(29, 92, 63, 0.18);
+  --reserve-fond: #f7efe5;
+  --reserve-encre: #7d5222;
+  --reserve-bord: rgba(125, 82, 34, 0.18);
+  --alerte-fond: #fbf2f2;
+  --alerte-encre: #8f2f2f;
+  --alerte-bord: #e8cfcf;
+
+  /* Surfaces. `--surface-2` est le gris de page des blocs de saisie et
+     des etats : legerement plus sombre que le blanc, jamais colore. */
+  --surface: #ffffff;
+  --surface-2: #f7f8f7;
+  --bordure: #e3e6e3;
+  --bordure-forte: #d2d7d3;
+
+  /* ----------------------------------------------------------------
+     TYPOGRAPHIE
+     ----------------------------------------------------------------
+     Une seule famille, une seule hierarchie. Les titres partagent le
+     meme interlettrage negatif : c'est ce qui donne au site son aspect
+     «-editorial » plutot que « application ». Les libelles en
+     capitales bastingage servent d'ancrage de section, jamais de titre.
+     ---------------------------------------------------------------- */
+  --police: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* Echelle fluide : le titre suit la largeur de l'ecran, le corps
+     reste fixe pour ne jamais devenir illisible. */
+  --titre-1: clamp(2rem, 1.4rem + 2.4vw, 3.15rem);
+  --titre-2: clamp(1.35rem, 1.15rem + 0.8vw, 1.6rem);
+  --corps: 0.95rem;
+  --corps-2: 0.875rem;
+  --petit: 0.8rem;
+  --micro: 0.72rem;
+
+  --interlettrage-titre: -0.03em;
+  --interlettrage-label: 0.08em;
+
+  /* ----------------------------------------------------------------
+     ESPACEMENTS
+     ----------------------------------------------------------------
+     Base de 4px. Les valeurs nommees evitent les marges magiques et
+     rendent le rythme vertical explicite : c'est l'espacement qui
+     fait la perception de qualite plus que la couleur.
+     ---------------------------------------------------------------- */
+  --espace-1: 0.25rem;
+  --espace-2: 0.5rem;
+  --espace-3: 0.75rem;
+  --espace-4: 1rem;
+  --espace-5: 1.5rem;
+  --espace-6: 2rem;
+  --espace-7: 3rem;
+  --espace-8: 4rem;
+
+  /* ----------------------------------------------------------------
+     FORMES ET OMBRES
+     ----------------------------------------------------------------
+     Les rayons sont peu nombreux et reappliques : la coherence vient
+     du petit nombre de valeurs, pas de leur finesse. Les ombres sont
+     colorees a la teinte de l'encre ; une ombre neutre grise sur fond
+     blanc parait Immediateement artificielle.
+     ---------------------------------------------------------------- */
+  --rayon: 8px;
+  --rayon-moyen: 12px;
+  --rayon-grand: 16px;
+  --rayon-plein: 999px;
+
+  --ombre-1: 0 1px 2px rgba(22, 33, 29, 0.04);
+  --ombre-2: 0 2px 8px rgba(22, 33, 29, 0.05);
+  --ombre-3: 0 8px 24px rgba(22, 33, 29, 0.08);
+  --ombre-fixe: 0 1px 2px rgba(22, 33, 29, 0.05), 0 6px 16px rgba(22, 33, 29, 0.04);
+
+  /* ----------------------------------------------------------------
+     MOUVEMENT
+     ----------------------------------------------------------------
+     Deux durees suffisent : 160ms pour un etat au survol, 240ms pour
+     un deplacement. Au-dela, l'interface parait lente ; en dessous,
+     les transitions paraissent sachetées.
+     ---------------------------------------------------------------- */
+  --transition-rapide: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-douce: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --largeur: 1240px;
+}
+
+/* ==================================================================
+   BASE
+   ================================================================== */
+
+/*
+ * Le fond blanc est pose sur html ET body : selon le navigateur, une
+ * seule de ces deux regles peut etre ignoree, et la page apparaitrait
+ * alors noire ou grise.
  *
- * Le fond blanc est impose sur html ET body : selon le navigateur et le mode
- * sombre du systeme, une seule de ces deux regles peut etre ignoree, et la
- * page apparaitrait alors noire. `color-scheme: light` empeche aussi le
- * navigateur d'inverser les couleurs natives (barres de defilement, champs).
+ * `color-scheme: light only` empeche le mode sombre du systeme
+ * d'inverser les couleurs natives (barres de defilement, champs de
+ * formulaire) : sans cela, le mode sombre reapparait sur certains
+ * elements meme si le fond de la page est blanc.
  */
 html {
   color-scheme: light only;
   background-color: #ffffff;
+  -webkit-text-size-adjust: 100%;
 }
 
 html,
@@ -19,24 +157,462 @@ body {
 
 body {
   margin: 0;
-  background-color: #ffffff;
-  color: #16202e;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  line-height: 1.5;
+  color: var(--encre);
+  font-family: var(--police);
+  font-size: var(--corps);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 img {
+  display: block;
   max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+/*
+ * Anneau de focus unique pour toute l'application.
+ *
+ * Il est pose sur `:focus-visible` et non sur `:focus` : le navigateur
+ * ne l'affiche alors qu'a la navigation clavier, ce qui evite le double
+ * contour sur un simple clic de souris. Le decalage de 2px le detache
+ * de la bordure pour qu'il reste lisible sur fond blanc comme sur fond
+ * vert.
+ */
+:focus-visible {
+  outline: 2px solid var(--primaire);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/*
+ * Reserve aux lecteurs d'ecran.
+ *
+ * `clip-path` et non `display: none` : un element masque de cette facon
+ * reste dans l'arbre d'accessibilite et est donc encore annonce, alors
+ * qu'un `display: none` le retire completement de l'arbre.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+::selection {
+  background-color: var(--primaire-clair);
+  color: var(--primaire-fonce);
+}
+
+/* ==================================================================
+   MISE EN PAGE
+   ================================================================== */
+
+/*
+ * Enveloppe d'ecran.
+ *
+ * `overflow-x: clip` est un garde-fou, pas un pansement : le carrousel
+ * contient volontairement une piste plus large que sa fenetre. Si une
+ * seule carte deborde d'un pixel, toute la page devient defilable
+ * horizontalement. `clip` differe de `hidden` : il ne cree pas de
+ * contexte de defilement, donc les ancres et les `position: sticky`
+ * continuent de fonctionner.
+ *
+ * Le flex vertical avec `main` en `flex: 1` colle le footer en bas de
+ * fenetre sur les pages courtes, sans imposer de hauteur fixe.
+ */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: clip;
+  background-color: #ffffff;
+}
+
+.app__contenu {
+  flex: 1;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--largeur);
+  margin: 0 auto;
+  padding: 0 var(--espace-5);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--espace-4);
+  }
+}
+
+/* ==================================================================
+   TYPOGRAPHIE DE CONTENU
+   ================================================================== */
+
+.titre-page {
+  font-size: var(--titre-1);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: var(--interlettrage-titre);
+  text-wrap: balance;
+}
+
+/*
+ * Sur-titre. Les capitales bastingage avec un filet court devant
+ * servent d'ancrage de section : elles donnent un point d'entree
+ * visuel sans introduire de couleur.
+ */
+.sur-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  color: var(--primaire);
+  font-size: var(--micro);
+  font-weight: 700;
+  letter-spacing: var(--interlettrage-label);
+  text-transform: uppercase;
+}
+
+.sur-titre::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background-color: currentColor;
+}
+
+.texte-doux {
+  color: var(--encre-2);
+  line-height: 1.65;
+}
+
+/* ==================================================================
+   BOUTONS
+   ------------------------------------------------------------------
+   Un seul langage visuel pour toute l'application : meme hauteur, meme
+   rayon, meme courbe de transition. Seule la couleur change, jamais la
+   geometrie — c'est ce qui fait qu'un bouton « Reserve » et un bouton
+   « Rechercher » paraissent Issus du meme systeme.
+   ================================================================== */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-2);
+  min-height: 2.5rem;
+  padding: 0 var(--espace-4);
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  font: inherit;
+  font-size: var(--corps-2);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-rapide),
+    border-color var(--transition-rapide),
+    color var(--transition-rapide),
+    box-shadow var(--transition-rapide);
+}
+
+/*
+ * Enfoncement au clic : la carte du bouton descend d'un pixel. Le
+ * `transform` n'est volontairement applique qu'a l'etat actif, jamais
+ * en permanence, pour ne pas declencher de deformation au repos.
+ */
+.button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* Bouton principal : l'action attendue sur l'ecran. Aplat vert, ombre
+   discrete, contraste eleve. */
+.button--primary {
+  background-color: var(--primaire);
+  color: #ffffff;
+  box-shadow: var(--ombre-1);
+}
+
+.button--primary:not(:disabled):hover {
+  background-color: var(--primaire-fonce);
+  box-shadow: 0 4px 12px var(--primaire-ombre);
+}
+
+/*
+ * Bouton secondaire : contour seul qui se renforce au survol. Le
+ * contraste du texte ne change pas : c'est la bordure qui s'accentue,
+   ce qui evite que le bouton paraisse s'allumer.
+ */
+.button--ghost {
+  background-color: var(--surface);
+  border-color: var(--bordure-forte);
+  color: var(--encre);
+}
+
+.button--ghost:not(:disabled):hover {
+  background-color: var(--primaire-clair);
+  border-color: var(--primaire-bord);
+  color: var(--primaire);
+}
+
+/* Bouton « Reserver » : l'action la plus visible de la fiche, mais
+   sobre — pas d'aplat geant. Ocre pour le distinguer du vert des
+   actions de navigation. */
+.button--reserve {
+  min-height: 2.875rem;
+  padding: 0 var(--espace-5);
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: var(--corps);
+  box-shadow: var(--ombre-1);
+}
+
+.button--reserve:not(:disabled):hover {
+  background-color: var(--accent-fonce);
+  box-shadow: 0 4px 12px var(--accent-bord);
+}
+
+.button--reserve:disabled {
+  background-color: var(--surface-2);
+  border-color: var(--bordure);
+  color: var(--encre-3);
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* Pagination. Chiffres tabulaires : les largeurs de chiffre sont
+   egales, donc la pagination ne se re-centre pas a chaque changement
+   de page. */
+.button--page {
+  min-width: 2.5rem;
+  min-height: 2.25rem;
+  padding: 0 var(--espace-3);
+  background-color: var(--surface);
+  border-color: var(--bordure);
+  color: var(--encre-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.button--page:not(:disabled):hover {
+  background-color: var(--primaire-clair);
+  border-color: var(--primaire-bord);
+  color: var(--primaire);
+}
+
+.button--page:disabled {
+  color: var(--encre-4);
+  opacity: 0.6;
+}
+
+/* Page courante : fond vert doux plutot qu'un aplat sature. Elle reste
+   ainsi aussi lisible que ses voisines tout en etant identifiable. */
+.button--page-active,
+.button--page-active:not(:disabled):hover {
+  background-color: var(--primaire);
+  border-color: var(--primaire);
+  color: #ffffff;
+}
+
+/* ==================================================================
+   CHAMPS DE SAISIE
+   ================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+  min-width: 0;
+}
+
+.label {
+  color: var(--encre-3);
+  font-size: var(--micro);
+  font-weight: 650;
+  letter-spacing: var(--interlettrage-label);
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0 var(--espace-3);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background-color: var(--surface);
+  color: var(--encre);
+  font: inherit;
+  font-size: var(--corps);
+  transition:
+    border-color var(--transition-rapide),
+    box-shadow var(--transition-rapide),
+    background-color var(--transition-rapide);
+}
+
+/* Le contour s'accentue au survol et se renforce au focus : c'est le
+   meme signal progressif que pour les boutons, ce qui rend l'interface
+   lisible sans avoir a apprendre deux conventions. */
+.input:hover:not(:focus) {
+  border-color: var(--bordure-forte);
+}
+
+.input::placeholder {
+  color: var(--encre-4);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primaire);
+  box-shadow: 0 0 0 3px var(--primaire-bord);
+}
+
+/* ==================================================================
+   BADGES DE STATUT
+   ------------------------------------------------------------------
+   Le fond reste tres pale, c'est la couleur du texte qui assure le
+   contraste. Une pastille de la meme couleur rend l'etat identifiable
+   sans avoir a lire le mot.
+   ================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  padding: 0.15rem 0.6rem 0.15rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--rayon-plein);
+  font-size: var(--micro);
+  font-weight: 650;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge::before {
+  content: "";
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+.badge--libre {
+  background-color: var(--dispo-fond);
+  border-color: var(--dispo-bord);
+  color: var(--dispo-encre);
+}
+
+.badge--reserve {
+  background-color: var(--reserve-fond);
+  border-color: var(--reserve-bord);
+  color: var(--reserve-encre);
+}
+
+/* ==================================================================
+   ETATS ET CHARGEMENT
+   ================================================================== */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-4);
+  padding: var(--espace-7) var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface-2);
+  color: var(--encre-2);
+  text-align: center;
+}
+
+.state--error {
+  background-color: var(--alerte-fond);
+  border-color: var(--alerte-bord);
+  color: var(--alerte-encre);
+}
+
+/* Squelette de chargement : un balayage lent et large, sans clignotement. */
+.squelette {
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-moyen);
+  background-color: var(--surface-2);
+  overflow: hidden;
+}
+
+.squelette__barre {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(31, 74, 61, 0.04) 0%,
+    rgba(31, 74, 61, 0.09) 50%,
+    rgba(31, 74, 61, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: balayage 1.5s ease-in-out infinite;
+}
+
+@keyframes balayage {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/*
+ * Respect du reglage systeme : au-dela des animations, on neutralise
+ * aussi les transformations au survol. Une card qui bouge peut declencher
+ * des vertiges, alors qu'un simple changement d'ombre est indolore.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .squelette__barre {
+    animation: none;
+  }
 }
