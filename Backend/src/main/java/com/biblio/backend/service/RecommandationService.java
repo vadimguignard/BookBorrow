@@ -41,7 +41,7 @@ public class RecommandationService {
     private static final int GENRES_UTILISES = 3;
 
     /** Nombre maximum de recommandations renvoyees a l'interface. */
-    private static final int LIMITE_PAR_DEFAUT = 10;
+    private static final int LIMITE_PAR_DEFAUT = 8;
 
     /** Nombre de candidats demandes par genre, avant deduplication. */
     private static final int CANDIDATS_PAR_GENRE = 12;
@@ -67,7 +67,7 @@ public class RecommandationService {
      * Livres recommandes pour une reference donnee.
      *
      * @param reference cle Open Library du livre consulte
-     * @param limite    nombre maximum de recommandations (10 par defaut)
+     * @param limite    nombre maximum de recommandations (8 par defaut)
      */
     public List<LivreDto> pourLivre(String reference, Integer limite) {
         int maximum = limite == null || limite < 1 ? LIMITE_PAR_DEFAUT : Math.min(limite, 20);

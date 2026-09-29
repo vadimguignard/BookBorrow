@@ -54,9 +54,9 @@ export class LivreService {
   /**
    * Livres recommandes par genre pour le livre consulte.
    *
-   * @param limite nombre maximum de recommandations, 10 par defaut
+   * @param limite nombre maximum de recommandations, 8 par defaut
    */
-  recommandations(reference: string, limite = 10): Observable<Livre[]> {
+  recommandations(reference: string, limite = 8): Observable<Livre[]> {
     return this.http.get<Livre[]>(`${this.baseUrl}/recommandations`, {
       params: new HttpParams().set('reference', reference).set('limite', limite),
     });

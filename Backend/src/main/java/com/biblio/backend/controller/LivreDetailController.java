@@ -41,7 +41,7 @@ public class LivreDetailController {
     }
 
     /**
-     * GET /api/livres/recommandations?reference=/works/OL82563W&limite=10
+     * GET /api/livres/recommandations?reference=/works/OL82563W&limite=8
      *
      * Livres proches du livre consulte, choisis par GENRE (sujets Open
      * Library). Le livre lui-meme n'est jamais recommande.
@@ -49,7 +49,7 @@ public class LivreDetailController {
     @GetMapping("/recommandations")
     public List<LivreDto> recommandations(
             @RequestParam(name = "reference") String reference,
-            @RequestParam(name = "limite", required = false, defaultValue = "10") Integer limite) {
+            @RequestParam(name = "limite", required = false, defaultValue = "8") Integer limite) {
         return recommandationService.pourLivre(reference, limite);
     }
 }

@@ -40,7 +40,7 @@ public class OpenLibraryDetailService {
     private static final String EDITIONS_PATH = "/works/%s/editions.json";
 
     /** Champs demandes a l'oeuvre : description et sujets (genres). */
-    private static final String WORK_FIELDS = "description,subjects,authors";
+    private static final String WORK_FIELDS = "description,subjects,authors,covers,first_publish_date";
 
     /** Nombre d'editions inspectees pour trouver la mieux renseignee. */
     private static final int EDITIONS_EXAMINEES = 8;
@@ -164,9 +164,16 @@ public class OpenLibraryDetailService {
             return null;
         }
 
-        String cheminAuteur = auteurCle.contains("/authors/")
-                ? auteurCle
-                : "/authors/" + normaliser(auteurCle) + ".json";
+        // L'identifiant peut venir sous la forme "/authors/OL1425869A" ou
+        // "OL1425869A" : on garde le dernier segment dans les deux cas.
+        // Le suffixe ".json" est obligatoire, sans lui l'API repond par une
+        // redirection 303 que RestClient ne suit pas et l'appel echoue, ce qui
+        // laissait l'auteur affiche « inconnu ».
+        String cleAuteur = dernierSegment(auteurCle);
+        if (cleAuteur == null) {
+            return null;
+        }
+        String cheminAuteur = "/authors/" + cleAuteur + ".json";
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("fields", "name");
@@ -269,6 +276,28 @@ public class OpenLibraryDetailService {
      * La reference stockee en base et celle de l'URL ne se presentent pas de la
      * meme facon ("/works/OL82563W" contre "OL82563W") : on accepte les deux.
      */
+    /**
+     * Dernier segment d'une cle Open Library, sans son extension.
+     *
+     * "/authors/OL1425869A.json" et "OL1425869A" donnent tous deux
+     * "OL1425869A". Retourne null si rien d'exploitable.
+     */
+    static String dernierSegment(String reference) {
+        if (reference == null) {
+            return null;
+        }
+        String propre = reference.trim();
+        if (propre.endsWith(".json")) {
+            propre = propre.substring(0, propre.length() - ".json".length());
+        }
+        int slash = propre.lastIndexOf('/');
+        if (slash >= 0) {
+            propre = propre.substring(slash + 1);
+        }
+        propre = propre.trim();
+        return propre.isEmpty() ? null : propre;
+    }
+
     static String normaliser(String reference) {
         if (reference == null) {
             return null;

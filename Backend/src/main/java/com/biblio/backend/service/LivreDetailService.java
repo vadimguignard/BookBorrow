@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Page de detail d'un livre.
@@ -33,7 +36,6 @@ public class LivreDetailService {
     private static final Logger log = LoggerFactory.getLogger(LivreDetailService.class);
 
     /** Nombre de genres affiches sur la page de detail. */
-    private static final int GENRES_AFFICHES = 8;
 
     private final LivreRepository livreRepository;
     private final OpenLibraryDetailService openLibraryDetailService;
@@ -82,10 +84,8 @@ public class LivreDetailService {
                 ? local.getAuteur()
                 : openLibraryDetailService.auteur(cle, oeuvre.premiereCleAuteur());
 
-        Integer annee = local != null ? local.getAnneePublication() : null;
-        if (annee == null) {
-            annee = anneeDepuisDescription(oeuvre);
-        }
+        String genre = oeuvre.genreExact();
+        Integer annee = annee(local, oeuvre, edition);
         String coverUrl = coverUrl(local, oeuvre);
 
         // Statut et disponibilite : source unique, notre base.
@@ -95,7 +95,8 @@ public class LivreDetailService {
             dateDisponibilite = null;
         }
 
-        List<String> genres = oeuvre.genresUtiles().stream().limit(GENRES_AFFICHES).toList();
+        // Un seul genre affiche, le plus specifique que l'on reconnaisse.
+        List<String> genres = genre == null ? List.of() : List.of(genre);
 
         // On applique exactement le meme tri que les recommandations, pour que
         // les genres affiches soient bien ceux qui ont produit les resultats.
@@ -105,7 +106,7 @@ public class LivreDetailService {
                 cle, edition != null ? edition.publishDate() : null,
                 Langues.libelle(Langues.premierCode(edition != null ? edition.languages() : null)),
                 edition != null ? edition.numberOfPages() : null,
-                genres.size());
+                genre);
 
         return new LivreDetailDto(
                 "/works/" + cle,
@@ -138,13 +139,62 @@ public class LivreDetailService {
         return Langues.libelle(Langues.premierCode(edition.languages()));
     }
 
-    /** Couverture depuis notre base si elle y est, sinon la plus grande de l'oeuvre. */
+    /**
+     * Couverture : notre base d'abord, sinon les couvertures de l'oeuvre.
+     *
+     * L'oeuvre liste plusieurs couvertures (portrait, paysage, petite taille).
+     * On prend la premiere : c'est celle qu'Open Library affiche par defaut.
+     */
     private String coverUrl(Livre local, WorkDoc oeuvre) {
         if (local != null && local.getCoverId() != null) {
             return "https://covers.openlibrary.org/b/id/%d-M.jpg".formatted(local.getCoverId());
         }
+        if (oeuvre != null && oeuvre.covers() != null) {
+            return oeuvre.covers().stream()
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .map(id -> "https://covers.openlibrary.org/b/id/%d-M.jpg".formatted(id))
+                    .orElse(null);
+        }
         return null;
     }
+
+    /**
+     * Annee de premiere publication.
+     *
+     * Trois sources, dans cet ordre : notre base, puis le champ
+     * first_publish_date de l'oeuvre, puis une annee trouvee dans la date
+     * d'edition retenue. On s'arrete a la premiere disponible.
+     */
+    private Integer annee(Livre local, WorkDoc oeuvre, EditionsResponse.EditionDoc edition) {
+        if (local != null && local.getAnneePublication() != null) {
+            return local.getAnneePublication();
+        }
+        Integer depuisOeuvre = extraireAnnee(oeuvre == null ? null : oeuvre.firstPublishDate());
+        if (depuisOeuvre != null) {
+            return depuisOeuvre;
+        }
+        return extraireAnnee(edition != null ? edition.publishDate() : null);
+    }
+
+    /** Premiere annee a 4 chiffres trouvee dans une date, ou null. */
+    private Integer extraireAnnee(String date) {
+        if (date == null) {
+            return null;
+        }
+        Matcher matcher = ANNEE.matcher(date);
+        if (!matcher.find()) {
+            return null;
+        }
+        try {
+            int annee = Integer.parseInt(matcher.group());
+            return annee >= 1450 && annee <= 2030 ? annee : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static final Pattern ANNEE = Pattern.compile("(\\d{4})");
 
     /** Un champ present chez Open Library prime sur celui de notre base. */
     private String libelle(String openLibrary, String local) {
@@ -161,35 +211,5 @@ public class LivreDetailService {
         }
         String propre = valeur.trim();
         return propre.isEmpty() ? null : propre;
-    }
-
-    /**
-     * Cherche une annee de publication dans le texte de la description.
-     *
-     * Beaucoup de descriptions commencent par « Originally published in 1954 »
-     * ou « First published in 1997 ». C'est un fallback : la valeur de la base
-     * reste prioritaire, et l'interface affiche « Non renseigne » sinon. Une
-     * annee trouvee dans une phrase n'est pas une donnee fiable, on ne la
-     * retourne donc que si elle est isolee par « in », et non au hasard dans
-     * le texte.
-     */
-    private Integer anneeDepuisDescription(WorkDoc oeuvre) {
-        String description = oeuvre == null ? null : oeuvre.descriptionLongue();
-        if (description == null) {
-            return null;
-        }
-        java.util.regex.Matcher matcher = java.util.regex.Pattern
-                .compile("\\b(?:in|published in)\\s+(\\d{4})\\b")
-                .matcher(description);
-        if (!matcher.find()) {
-            return null;
-        }
-        try {
-            int annee = Integer.parseInt(matcher.group(1));
-            // Une annee aberrante vient d'un bruit de texte, pas d'une reelle date.
-            return annee >= 1450 && annee <= 2030 ? annee : null;
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 }
