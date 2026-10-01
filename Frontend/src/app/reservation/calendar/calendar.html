@@ -1,0 +1,28 @@
+<div class="cal" [class.invalid]="invalid()">
+  <div class="head">
+    <button type="button" class="nav" (click)="shift(-1)" [disabled]="!canGoPrev()" aria-label="Mois précédent">‹</button>
+    <strong class="title" aria-live="polite">{{ title() }}</strong>
+    <button type="button" class="nav" (click)="shift(1)" aria-label="Mois suivant">›</button>
+  </div>
+  <div class="grid">
+    @for (d of weekdays; track $index) {
+      <span class="dow" aria-hidden="true">{{ d }}</span>
+    }
+    @for (cell of cells(); track cell.key) {
+      @if (cell.blank) {
+        <span></span>
+      } @else {
+        <button
+          type="button"
+          class="day"
+          [class.reserved]="cell.reserved"
+          [class.selected]="cell.key === selected()"
+          [disabled]="cell.disabled"
+          [attr.aria-label]="cell.label"
+          [attr.aria-pressed]="cell.key === selected()"
+          (click)="pick(cell)"
+        >{{ cell.day }}</button>
+      }
+    }
+  </div>
+</div>

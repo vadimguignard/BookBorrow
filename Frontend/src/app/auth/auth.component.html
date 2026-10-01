@@ -1,0 +1,131 @@
+<div class="app">
+  <main class="container">
+    <div class="auth">
+      <header class="auth__entete">
+        <p class="sur-titre">{{ inscription() ? 'Nouveau compte' : 'Espace personnel' }}</p>
+        <h1 class="titre-page">{{ inscription() ? 'Créer un compte' : 'Connexion' }}</h1>
+        <p class="texte-doux">
+          @if (inscription()) {
+            Inscrivez-vous pour réserver des livres et retrouver vos réservations dans votre profil.
+          } @else {
+            Connectez-vous pour réserver un livre et consulter votre profil.
+          }
+        </p>
+      </header>
+
+      <form class="auth__carte" (ngSubmit)="soumettre()" novalidate>
+        @if (erreurs().formulaire; as message) {
+          <p class="banniere banniere--ko" role="alert">{{ message }}</p>
+        }
+
+        <div class="field">
+          <label class="label" for="username">Nom d'utilisateur</label>
+          <input id="username" class="input" type="text" name="username" autocomplete="username"
+            autocapitalize="none" spellcheck="false"
+            [class.invalide]="erreurs().username"
+            [ngModel]="username()" (ngModelChange)="username.set($event); effacer('username')" />
+          @if (erreurs().username; as message) { <span class="msg" role="alert">{{ message }}</span> }
+        </div>
+
+        <div class="field">
+          <label class="label" for="motDePasse">Mot de passe</label>
+          <div class="mdp">
+            <input id="motDePasse" class="input" name="motDePasse"
+              [type]="motDePasseVisible() ? 'text' : 'password'"
+              [attr.autocomplete]="inscription() ? 'new-password' : 'current-password'"
+              [class.invalide]="erreurs().motDePasse"
+              [ngModel]="motDePasse()" (ngModelChange)="motDePasse.set($event); effacer('motDePasse')" />
+            <button class="mdp__oeil" type="button" (click)="basculerVisibilite()"
+              [attr.aria-pressed]="motDePasseVisible()"
+              [attr.aria-label]="motDePasseVisible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              [attr.title]="motDePasseVisible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+              @if (motDePasseVisible()) {
+                <!-- œil barré : le mot de passe est visible, un clic le masque -->
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 3l18 18" />
+                  <path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4.2 9.5 6a11.8 11.8 0 0 1-2.7 3.2" />
+                  <path d="M6.6 6.7A11.9 11.9 0 0 0 2.5 12c1 1.8 4.5 6 9.5 6a9.7 9.7 0 0 0 4.2-1" />
+                  <path d="M9.9 10a3 3 0 0 0 4.1 4.1" />
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M2.5 12C3.5 10.2 7 6 12 6s8.5 4.2 9.5 6c-1 1.8-4.5 6-9.5 6S3.5 13.8 2.5 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              }
+            </button>
+          </div>
+          @if (erreurs().motDePasse; as message) {
+            <span class="msg" role="alert">{{ message }}</span>
+          } @else if (inscription() && !force()) {
+            <span class="aide">8 caractères minimum, une majuscule et un chiffre.</span>
+          }
+
+          @if (inscription() && force(); as f) {
+            <div class="force" [attr.data-force]="f.classe" role="status" aria-live="polite">
+              <div class="force__barres" aria-hidden="true">
+                @for (i of [1, 2, 3, 4]; track i) {
+                  <span class="force__barre" [class.force__barre--on]="i <= f.niveau"></span>
+                }
+              </div>
+              <span class="force__libelle">Force du mot de passe : {{ f.libelle }}</span>
+            </div>
+          }
+        </div>
+
+        @if (inscription()) {
+          <div class="field">
+            <label class="label" for="confirmation">Confirmer le mot de passe</label>
+            <div class="mdp">
+              <input id="confirmation" class="input" name="confirmation"
+                [type]="motDePasseVisible() ? 'text' : 'password'" autocomplete="new-password"
+                [class.invalide]="erreurs().confirmation || ecartConfirmation()"
+                [ngModel]="confirmation()" (ngModelChange)="confirmation.set($event); effacer('confirmation')" />
+              <button class="mdp__oeil" type="button" (click)="basculerVisibilite()"
+                [attr.aria-pressed]="motDePasseVisible()"
+                [attr.aria-label]="motDePasseVisible() ? 'Masquer les mots de passe' : 'Afficher les mots de passe'"
+                [attr.title]="motDePasseVisible() ? 'Masquer les mots de passe' : 'Afficher les mots de passe'">
+                @if (motDePasseVisible()) {
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 3l18 18" />
+                    <path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4.2 9.5 6a11.8 11.8 0 0 1-2.7 3.2" />
+                    <path d="M6.6 6.7A11.9 11.9 0 0 0 2.5 12c1 1.8 4.5 6 9.5 6a9.7 9.7 0 0 0 4.2-1" />
+                    <path d="M9.9 10a3 3 0 0 0 4.1 4.1" />
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M2.5 12C3.5 10.2 7 6 12 6s8.5 4.2 9.5 6c-1 1.8-4.5 6-9.5 6S3.5 13.8 2.5 12Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (erreurs().confirmation; as message) {
+              <span class="msg" role="alert">{{ message }}</span>
+            } @else if (ecartConfirmation()) {
+              <span class="msg" role="alert">Les mots de passe ne correspondent pas.</span>
+            }
+          </div>
+        }
+
+        <button class="button button--primary button--pleine" type="submit" [disabled]="envoi()">
+          @if (envoi()) {
+            {{ inscription() ? 'Création du compte…' : 'Connexion…' }}
+          } @else {
+            {{ inscription() ? "S'inscrire" : 'Se connecter' }}
+          }
+        </button>
+
+        <p class="auth__bascule">
+          @if (inscription()) {
+            Déjà un compte ?
+            <a routerLink="/connexion" [queryParams]="paramsRetour">Se connecter</a>
+          } @else {
+            Pas encore de compte ?
+            <a routerLink="/inscription" [queryParams]="paramsRetour">S'inscrire</a>
+          }
+        </p>
+      </form>
+    </div>
+  </main>
+</div>

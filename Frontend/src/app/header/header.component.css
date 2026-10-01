@@ -1,0 +1,88 @@
+/* Barre de navigation. Aucune couleur en dur : tout vient des jetons de src/styles.css. */
+
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--bordure);
+  background-color: var(--surface);
+}
+
+.entete__interieur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-4);
+  min-height: 3.75rem;
+}
+
+.entete__marque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  color: var(--primaire);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: var(--interlettrage-titre);
+  text-decoration: none;
+}
+
+.entete__marque svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.entete__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
+.entete__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  min-height: 2.5rem;
+  padding: 0 var(--espace-3);
+  border-radius: var(--rayon);
+  color: var(--encre-2);
+  font-size: var(--corps-2);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-rapide),
+    color var(--transition-rapide);
+}
+
+.entete__lien:hover { background-color: var(--surface-2); color: var(--encre); }
+.entete__lien--actif { color: var(--primaire); }
+
+.entete__avatar {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--primaire-bord);
+  border-radius: 50%;
+  background-color: var(--primaire-clair);
+  color: var(--primaire);
+  font-size: var(--petit);
+  font-weight: 700;
+}
+
+.entete__nom {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .entete__nom { display: none; }
+  .entete__interieur { gap: var(--espace-2); }
+}

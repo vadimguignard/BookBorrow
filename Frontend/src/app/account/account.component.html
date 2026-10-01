@@ -1,0 +1,132 @@
+<div class="app">
+  <main class="container">
+    <div class="espace">
+      <header class="espace__entete">
+        <p class="sur-titre">Espace personnel</p>
+        <h1 class="titre-page">Votre profil</h1>
+      </header>
+
+      <!-- ===================== Informations du compte ===================== -->
+      @if (auth.utilisateur(); as u) {
+        <section class="carte-profil" aria-labelledby="titre-infos">
+          <div class="carte-profil__tete">
+            <span class="avatar" aria-hidden="true">{{ u.username.charAt(0).toUpperCase() }}</span>
+            <div class="carte-profil__identite">
+              <h2 id="titre-infos" class="section-titre">{{ u.username }}</h2>
+              <p class="texte-doux">Membre depuis le {{ formatFr(u.dateInscription) }}</p>
+            </div>
+          </div>
+
+          <dl class="infos">
+            <div class="infos__ligne"><dt>Nom d'utilisateur</dt><dd>{{ u.username }}</dd></div>
+            <div class="infos__ligne"><dt>Membre depuis</dt><dd>{{ formatFr(u.dateInscription) }}</dd></div>
+            <div class="infos__ligne"><dt>Réservations</dt><dd>{{ u.nombreReservations }}</dd></div>
+          </dl>
+        </section>
+      }
+
+      <!-- ===================== Apparence ===================== -->
+      <section class="apparence" aria-labelledby="titre-apparence">
+        <div class="apparence__texte">
+          <h2 id="titre-apparence" class="section-titre">Apparence</h2>
+          <p class="texte-doux">
+            Thème actuel : {{ sombre() ? 'sombre' : 'clair' }}. Votre choix est conservé dans ce navigateur.
+          </p>
+        </div>
+        <button class="button button--ghost bascule" type="button" role="switch"
+          [attr.aria-checked]="sombre()" (click)="basculerTheme()">
+          <span class="bascule__piste" aria-hidden="true"><span class="bascule__pastille"></span></span>
+          {{ sombre() ? 'Passer en mode clair' : 'Passer en mode sombre' }}
+        </button>
+      </section>
+
+      <!-- ===================== Livres réservés ===================== -->
+      <section class="reservations" aria-labelledby="titre-reservations">
+        <h2 id="titre-reservations" class="section-titre">Mes réservations</h2>
+
+        @if (erreurAnnulation(); as message) {
+          <p class="banniere banniere--ko" role="alert">{{ message }}</p>
+        }
+
+        @if (chargement()) {
+          <div class="squelette" aria-hidden="true">
+            <div class="squelette__barre" style="height: 7rem"></div>
+          </div>
+          <p class="sr-only" role="status">Chargement de vos réservations…</p>
+        } @else if (erreurChargement(); as message) {
+          <div class="state state--error" role="alert">
+            <p>{{ message }}</p>
+            <button class="button button--primary" type="button" (click)="charger()">Réessayer</button>
+          </div>
+        } @else if (reservations().length === 0) {
+          <div class="etat-vide">
+            <span class="etat-vide__signe" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 1 4 16V5.5Z" />
+                <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 0 20 16V5.5Z" />
+              </svg>
+            </span>
+            <p class="etat-vide__texte">Vous n'avez aucune réservation pour le moment.</p>
+            <a class="button button--primary" routerLink="/">Parcourir le catalogue</a>
+          </div>
+        } @else {
+          @if (aVenirOuEnCours().length > 0) {
+            <h3 class="sous-titre">En cours et à venir</h3>
+            <ul class="liste">
+              @for (r of aVenirOuEnCours(); track r.id) {
+                <ng-container *ngTemplateOutlet="ligne; context: { $implicit: r }"></ng-container>
+              }
+            </ul>
+          }
+          @if (terminees().length > 0) {
+            <h3 class="sous-titre">Terminées</h3>
+            <ul class="liste liste--terminee">
+              @for (r of terminees(); track r.id) {
+                <ng-container *ngTemplateOutlet="ligne; context: { $implicit: r }"></ng-container>
+              }
+            </ul>
+          }
+        }
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Une réservation (utilisée par les deux listes) -->
+<ng-template #ligne let-r>
+  <li class="resa">
+    <a class="resa__cover" [routerLink]="['/livre', r.reference]" [attr.aria-label]="'Voir la fiche de ' + r.titre">
+      @if (aCouverture(r)) {
+        <img class="resa__image" [src]="r.coverUrl" [alt]="'Couverture de ' + r.titre" loading="lazy" (error)="couvertureCassee(r)" />
+      } @else {
+        <span class="resa__placeholder">Pas de couverture</span>
+      }
+    </a>
+
+    <div class="resa__corps">
+      <h4 class="resa__titre"><a [routerLink]="['/livre', r.reference]">{{ r.titre }}</a></h4>
+      <p class="resa__auteur">{{ r.auteur }}</p>
+      <p class="resa__dates">Du {{ formatFr(r.dateDebut) }} au {{ formatFr(r.dateFin) }}</p>
+      <span class="badge" [class.badge--libre]="r.etat === 'A_VENIR'" [class.badge--reserve]="r.etat === 'EN_COURS'"
+        [class.badge--terminee]="r.etat === 'TERMINEE'">
+        {{ libelleEtat(r.etat) }}
+      </span>
+    </div>
+
+    @if (r.etat !== 'TERMINEE') {
+      <div class="resa__actions">
+        @if (annulationDemandee() === r.id) {
+          <p class="resa__confirmation">Annuler cette réservation ?</p>
+          <button class="button button--danger" type="button" (click)="confirmerAnnulation(r.id)" [disabled]="annulationEnCours() === r.id">
+            {{ annulationEnCours() === r.id ? 'Annulation…' : "Oui, annuler" }}
+          </button>
+          <button class="button button--ghost" type="button" (click)="renoncerAnnulation()" [disabled]="annulationEnCours() === r.id">
+            Non, garder
+          </button>
+        } @else {
+          <button class="button button--ghost" type="button" (click)="demanderAnnulation(r.id)">Annuler</button>
+        }
+      </div>
+    }
+  </li>
+</ng-template>

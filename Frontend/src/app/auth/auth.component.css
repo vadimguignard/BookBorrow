@@ -1,0 +1,87 @@
+/* Connexion / inscription. Aucune couleur en dur : tout vient des jetons de src/styles.css. */
+
+.auth {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: var(--espace-7) 0 var(--espace-8);
+}
+
+.auth__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  margin-bottom: var(--espace-6);
+}
+
+.auth__carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-5);
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+
+.input.invalide { border-color: var(--alerte-encre); }
+.msg { color: var(--alerte-encre); font-size: var(--petit); }
+.aide { color: var(--encre-3); font-size: var(--petit); }
+
+.banniere {
+  padding: var(--espace-3) var(--espace-4);
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  font-size: var(--corps-2);
+}
+.banniere--ko { background-color: var(--alerte-fond); border-color: var(--alerte-bord); color: var(--alerte-encre); }
+
+.mdp { position: relative; }
+.mdp .input { padding-right: 3rem; }
+.mdp__oeil {
+  position: absolute;
+  top: 50%;
+  right: var(--espace-2);
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rayon);
+  background: none;
+  color: var(--encre-3);
+  cursor: pointer;
+  transition: color var(--transition-rapide), background-color var(--transition-rapide);
+}
+.mdp__oeil:hover { background-color: var(--primaire-clair); color: var(--primaire); }
+.mdp__oeil svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Indicateur de force du mot de passe */
+.force { display: flex; flex-direction: column; gap: var(--espace-1); }
+.force__barres { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--espace-1); }
+.force__barre {
+  height: 0.3rem;
+  border-radius: var(--rayon-plein);
+  background-color: var(--bordure);
+  transition: background-color var(--transition-rapide);
+}
+.force[data-force='faible'] .force__barre--on { background-color: var(--alerte-encre); }
+.force[data-force='moyen'] .force__barre--on { background-color: var(--accent); }
+.force[data-force='fort'] .force__barre--on { background-color: var(--dispo-encre); }
+.force__libelle { color: var(--encre-3); font-size: var(--petit); }
+
+.button--pleine { width: 100%; min-height: 2.875rem; }
+
+.auth__bascule { color: var(--encre-2); font-size: var(--corps-2); text-align: center; }
+.auth__bascule a { color: var(--primaire); font-weight: 600; text-decoration: none; }
+.auth__bascule a:hover { text-decoration: underline; }

@@ -1,0 +1,31 @@
+<header class="entete">
+  <div class="container entete__interieur">
+    <a class="entete__marque" routerLink="/" aria-label="Biblio Online, retour au catalogue">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 1 4 16V5.5Z" />
+        <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 0 20 16V5.5Z" />
+      </svg>
+      Biblio Online
+    </a>
+
+    <nav class="entete__nav" aria-label="Navigation principale">
+      <a class="entete__lien" routerLink="/" routerLinkActive="entete__lien--actif" [routerLinkActiveOptions]="{ exact: true }">
+        Catalogue
+      </a>
+
+      @if (auth.pret()) {
+        @if (auth.utilisateur(); as utilisateur) {
+          <a class="entete__lien" routerLink="/profil" routerLinkActive="entete__lien--actif">
+            <span class="entete__avatar" aria-hidden="true">{{ utilisateur.username.charAt(0).toUpperCase() }}</span>
+            <span class="entete__nom">{{ utilisateur.username }}</span>
+            <span class="sr-only">— mon profil et mes réservations</span>
+          </a>
+          <button class="button button--ghost" type="button" (click)="deconnecter()">Déconnexion</button>
+        } @else {
+          <a class="button button--ghost" routerLink="/connexion">Connexion</a>
+          <a class="button button--primary" routerLink="/inscription">Inscription</a>
+        }
+      }
+    </nav>
+  </div>
+</header>

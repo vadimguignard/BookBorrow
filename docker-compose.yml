@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: biblio-postgres
+    environment:
+      POSTGRES_DB: biblio
+      POSTGRES_USER: biblio
+      POSTGRES_PASSWORD: biblio
+    ports:
+      - "5432:5432"
+    volumes:
+      - biblio-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biblio"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build: ./Backend
+    container_name: biblio-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: biblio
+      DB_USER: biblio
+      DB_PASSWORD: biblio
+      # A remplacer en production par une valeur secrete longue et aleatoire.
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  frontend:
+    build: ./Frontend
+    container_name: biblio-frontend
+    environment:
+      # Le serveur du front relaie /api vers le backend (reseau interne de compose).
+      BACKEND_URL: http://backend:8080
+      # Pour un acces par un autre nom d'hote que localhost, par exemple :
+      # NG_ALLOWED_HOSTS: biblio.exemple.fr
+    ports:
+      - "4200:4000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:4000/connexion"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  biblio-data:

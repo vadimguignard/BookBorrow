@@ -1,0 +1,217 @@
+/*
+ * Espace personnel : informations du compte et reservations.
+ * Aucune couleur en dur : tout vient des jetons de src/styles.css.
+ */
+
+.espace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+  padding: var(--espace-7) 0 var(--espace-8);
+}
+
+.espace__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+}
+
+.section-titre {
+  font-size: var(--titre-2);
+  font-weight: 700;
+  letter-spacing: var(--interlettrage-titre);
+  overflow-wrap: anywhere;
+}
+
+.sous-titre {
+  margin: var(--espace-5) 0 var(--espace-3);
+  color: var(--encre-3);
+  font-size: var(--micro);
+  font-weight: 700;
+  letter-spacing: var(--interlettrage-label);
+  text-transform: uppercase;
+}
+
+/* ---- Messages ---- */
+.banniere {
+  margin-bottom: var(--espace-4);
+  padding: var(--espace-3) var(--espace-4);
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  font-size: var(--corps-2);
+}
+.banniere--ok { background-color: var(--dispo-fond); border-color: var(--dispo-bord); color: var(--dispo-encre); }
+.banniere--ko { background-color: var(--alerte-fond); border-color: var(--alerte-bord); color: var(--alerte-encre); }
+
+/* ---- Carte du profil ---- */
+.carte-profil {
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+
+.carte-profil__tete {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-4);
+  margin-bottom: var(--espace-5);
+}
+
+.carte-profil__identite { flex: 1; min-width: 0; }
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--primaire-bord);
+  border-radius: 50%;
+  background-color: var(--primaire-clair);
+  color: var(--primaire);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.infos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--espace-4) var(--espace-5);
+}
+
+.infos__ligne { display: flex; flex-direction: column; gap: var(--espace-1); min-width: 0; }
+.infos dt {
+  color: var(--encre-3);
+  font-size: var(--micro);
+  font-weight: 650;
+  letter-spacing: var(--interlettrage-label);
+  text-transform: uppercase;
+}
+.infos dd { font-weight: 600; overflow-wrap: anywhere; }
+
+
+/* ---- Apparence (theme clair / sombre) ---- */
+.apparence {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espace-4);
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+.apparence__texte { display: flex; flex-direction: column; gap: var(--espace-1); }
+
+.bascule__piste {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 1.25rem;
+  border-radius: var(--rayon-plein);
+  background-color: var(--bordure-forte);
+  transition: background-color var(--transition-rapide);
+}
+.bascule__pastille {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  background-color: var(--surface);
+  transition: transform var(--transition-rapide);
+}
+.bascule[aria-checked='true'] .bascule__piste { background-color: var(--primaire); }
+.bascule[aria-checked='true'] .bascule__pastille { transform: translateX(1rem); }
+
+/* ---- Reservations ---- */
+.reservations .section-titre { margin-bottom: var(--espace-3); }
+
+.liste { display: flex; flex-direction: column; gap: var(--espace-3); list-style: none; padding: 0; margin: 0; }
+.liste--terminee { opacity: 0.8; }
+
+.resa {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  align-items: center;
+  gap: var(--espace-4);
+  padding: var(--espace-4);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-moyen);
+  background-color: var(--surface);
+}
+
+.resa__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--rayon);
+  background-color: var(--surface-2);
+}
+.resa__image { width: 100%; height: 100%; object-fit: cover; }
+.resa__placeholder { padding: var(--espace-1); color: var(--encre-4); font-size: var(--micro); text-align: center; }
+
+.resa__corps { display: flex; flex-direction: column; align-items: flex-start; gap: var(--espace-1); min-width: 0; }
+.resa__titre { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.resa__titre a { color: var(--encre); text-decoration: none; }
+.resa__titre a:hover { color: var(--primaire); }
+.resa__auteur { color: var(--encre-2); }
+.resa__dates { margin-bottom: var(--espace-1); color: var(--encre-3); font-size: var(--corps-2); }
+
+.badge--terminee { background-color: var(--surface-2); border-color: var(--bordure); color: var(--encre-3); }
+
+.resa__actions { display: flex; flex-direction: column; align-items: stretch; gap: var(--espace-2); }
+.resa__confirmation { color: var(--encre-2); font-size: var(--corps-2); font-weight: 600; text-align: center; }
+
+.button--danger { background-color: var(--alerte-encre); border-color: var(--alerte-encre); color: var(--surface); }
+.button--danger:not(:disabled):hover { filter: brightness(0.9); }
+
+/* ---- Etat vide ---- */
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-4);
+  padding: var(--espace-8) var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  text-align: center;
+}
+
+.etat-vide__signe {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--primaire-bord);
+  border-radius: 50%;
+  background-color: var(--primaire-clair);
+  color: var(--primaire);
+}
+
+.etat-vide__signe svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.etat-vide__texte { color: var(--encre-2); }
+
+@media (max-width: 640px) {
+  .carte-profil__tete { flex-wrap: wrap; }
+  .resa { grid-template-columns: 4rem 1fr; }
+  .resa__actions { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .resa__confirmation { flex-basis: 100%; text-align: left; }
+}

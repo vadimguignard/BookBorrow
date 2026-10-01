@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Biblio Online — Catalogue des livres</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Applique le theme memorise avant le premier affichage (evite un flash clair).
+    try {
+      if (localStorage.getItem('bookborrow.theme') === 'sombre') {
+        document.documentElement.setAttribute('data-theme', 'sombre');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
