@@ -1,0 +1,343 @@
+/* ==================================================================
+   CATALOGUE
+   ================================================================== */
+
+/*
+ * Pave de titre.
+ *
+ * Il n'y a plus de bandeau de couleur ni de filet : l'en-tete global
+ * porte deja la separation. Ce pave ne sert qu'a installer le sujet de
+ * la page, avec le meme sur-titre que le reste du site.
+ */
+.catalogue__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  max-width: 62ch;
+  padding: var(--espace-7) 0 var(--espace-6);
+}
+
+.catalogue__introduction {
+  font-size: 1.02rem;
+  max-width: 58ch;
+}
+
+/* ------------------------------------------------------------------
+   Recherche et filtres
+   ------------------------------------------------------------------
+   Un seul pave pour la recherche et les filtres. Deux boites empilees
+   alourdiraient la page et donnaient l'image d'une interface d'administration ;
+   un filet interne suffit a separer les deux niveaux.
+   ------------------------------------------------------------------ */
+
+.filtres {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+  margin-bottom: var(--espace-6);
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+
+.recherche {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espace-3);
+}
+
+.recherche__champ {
+  flex: 1;
+}
+
+/*
+ * `flex-shrink: 0` sur le bouton : sans lui, un texte de recherche
+ * long sur mobile compresse le bouton jusqu'a le rendre illisible.
+ */
+.recherche__valider {
+  flex-shrink: 0;
+  min-width: 7rem;
+}
+
+.facettes {
+  display: grid;
+  /*
+   * Les trois filtres prennent la largeur restante et le bouton se cale
+   * a droite : `auto` sur la derniere colonne le laisse a sa largeur
+   * naturelle, aligne en bas avec les champs grace a `align-items`.
+   */
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: var(--espace-3);
+  padding-top: var(--espace-4);
+  border-top: 1px solid var(--bordure);
+}
+
+/* ------------------------------------------------------------------
+   Resultats
+   ------------------------------------------------------------------ */
+
+.grille-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espace-4);
+  margin-bottom: var(--espace-4);
+}
+
+.grille-entete__compte {
+  color: var(--encre-2);
+  font-size: var(--corps-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.grille-entete__compte strong {
+  color: var(--encre);
+  font-weight: 650;
+}
+
+.grille-entete__compte span {
+  margin: 0 var(--espace-2);
+  color: var(--encre-4);
+}
+
+.grille {
+  display: grid;
+  /*
+   * `auto-fill` avec un minimum de 200px : la grille remplit la largeur
+   * sur grand ecran au lieu d'elargir les cartes, et garde 2 colonnes
+   * sur mobile. `minmax(0, 1fr)` et non `minmax(200px, 1fr)` : le second
+   * empeche les colonnes de descendre sous leur minimum et provoque un
+   * debordement horizontal sur tres petits ecrans.
+   */
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--espace-5) var(--espace-4);
+}
+
+.grille--squelette {
+  pointer-events: none;
+}
+
+/*
+ * Hauteur identique pour toute la rangee.
+ *
+ * Les couvertures ont un ratio fixe, mais un titre sur deux lignes et un
+ * titre sur une ligne n'occupent pas la meme hauteur. `align-items:
+ * stretch` (defaut de la grille) et le `flex: 1` du corps font que la
+ * carte la plus haute de la rangee s'etire, et le statut se retrouve
+ * aligne sur toutes les autres.
+ */
+.carte {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-moyen);
+  background-color: var(--surface);
+  overflow: hidden;
+  transition:
+    border-color var(--transition-rapide),
+    box-shadow var(--transition-rapide);
+}
+
+/*
+ * SURVOL — la carte ne change ni de taille ni de place.
+ *
+ * Aucune transformation, aucune mise a l'echelle : la carte garde
+ * exactement les memes dimensions et la meme position dans la grille ou
+ * le carrousel, donc les voisines ne bougent pas et rien ne « saute ».
+ * Le retour est un simple eclairage : ombre portee un cran plus
+ * dense, bordure qui se teinte, couverture qui zoome de 3 %.
+ *
+ * C'est le point le plus important du style : un `transform: scale` ou
+ * meme un `translateY` sur une carte de bibliotheque donne une impression
+ * de jouet. Ici, la carte parait « activee », pas « agrandie ».
+ */
+.carte:hover {
+  border-color: var(--primaire-bord);
+  box-shadow: var(--ombre-3);
+}
+
+/* Focus au clavier : meme traitement que le survol, pour que la
+   navigation au clavier ne soit pas moins visible que celle a la
+   souris. */
+.carte:focus-within {
+  border-color: var(--primaire-bord);
+  box-shadow: var(--ombre-3);
+}
+
+.carte__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2 / 3;
+  background-color: var(--surface-2);
+  border-bottom: 1px solid var(--bordure);
+  overflow: hidden;
+}
+
+.carte__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-douce);
+}
+
+/*
+ * Le zoom est limite a la couverture et a 3 % : assez pour que l'image
+ * « se leve », pas assez pour deverler le cadre. Comme il s'agit d'un
+ * `scale` sur une image en `overflow: hidden`, le debordement est
+ * rogne par le conteneur et la mise en page n'en est pas affectee.
+ */
+.carte:hover .carte__image,
+.carte:focus-within .carte__image {
+  transform: scale(1.03);
+}
+
+.cover-placeholder {
+  padding: var(--espace-4);
+  color: var(--encre-4);
+  font-size: var(--petit);
+  text-align: center;
+}
+
+.carte__corps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espace-1);
+  flex: 1;
+  width: 100%;
+  padding: var(--espace-4);
+}
+
+.carte__titre {
+  margin: 0;
+  font-size: var(--corps);
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  /*
+   * Deux lignes maximum, puis coupe. Sans cette limite, un titre long
+   * decale le statut et la disponibilite et rompt l'alignement de la
+   * rangee — toutes les cartes n'ont plus la meme hauteur utile.
+   */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carte__lien {
+  color: var(--encre);
+  text-decoration: none;
+  transition: color var(--transition-rapide);
+}
+
+.carte__lien:hover {
+  color: var(--primaire);
+}
+
+.carte__auteur {
+  margin: 0;
+  color: var(--encre-2);
+  font-size: var(--corps-2);
+  /* Un auteur sur une seule ligne : au-dela, la carte double de
+     hauteur et l'alignement de la rangee est rompu. */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carte__annee {
+  margin: 0 0 var(--espace-2);
+  color: var(--encre-3);
+  font-size: var(--petit);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le statut est repousse en bas de carte : toutes les cartes d'une rangee
+   s'alignent dessus, quelle que soit la longueur du titre. */
+.carte__corps .badge {
+  margin-top: auto;
+}
+
+.carte__dispo {
+  margin: var(--espace-2) 0 0;
+  color: var(--encre-2);
+  font-size: var(--petit);
+  line-height: 1.45;
+}
+
+.carte-squelette {
+  aspect-ratio: 2 / 3.4;
+}
+
+/* ------------------------------------------------------------------
+   Pagination
+   ------------------------------------------------------------------ */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espace-2);
+  margin: var(--espace-7) 0 var(--espace-6);
+}
+
+/* ==================================================================
+   RESPONSIVE
+   ================================================================== */
+
+/*
+ * Les trois filtres passent sur deux colonnes puis une seule. La bascule
+ * a 900px compte : sous cette largeur, trois colonnes forceraient des
+ * champs de l'ordre de 100px, illisibles et impossibles a remplir.
+ */
+@media (max-width: 900px) {
+  .facettes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .catalogue__entete {
+    padding: var(--espace-5) 0 var(--espace-4);
+  }
+
+  .filtres {
+    padding: var(--espace-4);
+    border-radius: var(--rayon-moyen);
+  }
+
+  .facettes {
+    grid-template-columns: 1fr;
+  }
+
+  .recherche {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .recherche__valider {
+    width: 100%;
+  }
+
+  .grille {
+    gap: var(--espace-4) var(--espace-3);
+  }
+}
+
+/*
+ * Sous 380px, deux colonnes de couverture deviennent trop etroites : le
+ * titre tient sur une ligne et la couverture resemble a une vignette. On
+ * repasse a une colonne.
+ */
+@media (max-width: 380px) {
+  .grille {
+    grid-template-columns: 1fr;
+  }
+}
