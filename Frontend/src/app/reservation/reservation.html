@@ -1,0 +1,102 @@
+<div class="app">
+  <main class="container">
+    <nav class="fil-ariane" aria-label="Fil d'ariane">
+      <a class="fil-ariane__lien" [routerLink]="backLink">
+        <svg class="fil-ariane__fleche" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+        Retour à la fiche
+      </a>
+    </nav>
+
+    @if (loading()) {
+      <div class="squelette" aria-hidden="true">
+        <div class="squelette__barre" style="height: 18rem"></div>
+      </div>
+      <p class="state" role="status">Chargement… première visite : 5 à 10 s.</p>
+    } @else if (loadError()) {
+      <div class="state state--error" role="alert">
+        <p>{{ loadError() }}</p>
+        <a class="button button--primary" routerLink="/">Retour au catalogue</a>
+      </div>
+    } @else if (book(); as b) {
+      <header class="livre">
+        <div class="livre__cover">
+          @if (b.coverUrl && !coverFailed()) {
+            <img class="livre__image" [src]="b.coverUrl" [alt]="'Couverture de ' + b.titre" (error)="coverFailed.set(true)" />
+          } @else {
+            <span class="livre__placeholder">Pas de couverture</span>
+          }
+        </div>
+        <div class="livre__infos">
+          <p class="sur-titre">Réservation</p>
+          <h1 class="titre-page">{{ b.titre }}</h1>
+          <p class="livre__auteur">{{ b.auteur ?? 'Auteur inconnu' }}</p>
+          @if (b.anneePublication) {
+            <p class="livre__annee">Publié en {{ b.anneePublication }}</p>
+          }
+        </div>
+      </header>
+
+      <form class="formulaire" (submit)="$event.preventDefault(); review()" novalidate>
+        @if (confirming()) {
+          <h2 class="formulaire__titre">Vérifiez votre réservation</h2>
+          <dl class="recap">
+            <dt>Livre</dt><dd>{{ b.titre }}</dd>
+            <dt>Nom</dt><dd>{{ lastName().trim() }}</dd>
+            <dt>Prénom</dt><dd>{{ firstName().trim() }}</dd>
+            <dt>Du</dt><dd>{{ formatFr(startDate()!) }}</dd>
+            <dt>Au</dt><dd>{{ formatFr(endDate()!) }}</dd>
+          </dl>
+          <div class="actions">
+            <button type="button" class="button button--primary" (click)="confirm()" [disabled]="submitting()">
+              {{ submitting() ? 'Réservation en cours…' : 'Confirmer la réservation' }}
+            </button>
+            <button type="button" class="button button--ghost" (click)="edit()" [disabled]="submitting()">Modifier</button>
+          </div>
+        } @else {
+          <h2 class="formulaire__titre">Réserver ce livre</h2>
+
+          @if (success(); as message) {
+            <p class="banniere banniere--ok" role="status">{{ message }}</p>
+          }
+          @if (errors().form; as message) {
+            <p class="banniere banniere--ko" role="alert">{{ message }}</p>
+          }
+
+          <div class="rangee">
+            <div class="field">
+              <label class="label" for="lastName">Nom</label>
+              <input id="lastName" class="input" type="text" autocomplete="family-name" [class.invalide]="errors().lastName"
+                [value]="lastName()" (input)="setLastName($any($event.target).value)" />
+              @if (errors().lastName; as message) { <span class="msg" role="alert">{{ message }}</span> }
+            </div>
+            <div class="field">
+              <label class="label" for="firstName">Prénom</label>
+              <input id="firstName" class="input" type="text" autocomplete="given-name" [class.invalide]="errors().firstName"
+                [value]="firstName()" (input)="setFirstName($any($event.target).value)" />
+              @if (errors().firstName; as message) { <span class="msg" role="alert">{{ message }}</span> }
+            </div>
+          </div>
+
+          <div class="rangee">
+            <div class="field">
+              <span class="label">Réserver de</span>
+              <app-calendar [selected]="startDate()" [reservedDays]="reservedDays()" [invalid]="!!errors().startDate" (picked)="pickStart($event)" />
+              @if (errors().startDate; as message) { <span class="msg" role="alert">{{ message }}</span> }
+            </div>
+            <div class="field">
+              <span class="label">Jusqu'à</span>
+              <app-calendar [selected]="endDate()" [reservedDays]="reservedDays()" [minDate]="endMin()" [invalid]="!!errors().endDate" (picked)="pickEnd($event)" />
+              @if (errors().endDate; as message) { <span class="msg" role="alert">{{ message }}</span> }
+            </div>
+          </div>
+
+          <p class="legende"><span class="echantillon"></span> Jours déjà réservés (non sélectionnables)</p>
+
+          <button type="submit" class="button button--primary button--pleine">Réserver</button>
+        }
+      </form>
+    }
+  </main>
+</div>

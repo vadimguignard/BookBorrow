@@ -1,0 +1,10 @@
+/*
+ * Styles de la coquille de l'application.
+ *
+ * Volontairement vide : le design system (variables, boutons, badges, champs)
+ * vit dans src/styles.css, car il doit etre global. Un fichier de style de
+ * composant est encapsule — chaque selecteur recoit un attribut _ngcontent
+ * propre au composant — et le template d'App ne contient plus qu'un
+ * <router-outlet>. Y loger les styles partages ne les appliquerait donc nulle
+ * part : c'etait precisement ce qui laissait les pages sans aucun style.
+ */

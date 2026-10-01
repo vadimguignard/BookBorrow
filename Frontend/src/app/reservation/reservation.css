@@ -1,0 +1,96 @@
+/* Page de reservation. Aucune couleur en dur : tout vient des jetons de src/styles.css. */
+
+.fil-ariane { display: flex; align-items: center; padding: var(--espace-4) 0 0; }
+.fil-ariane__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  color: var(--encre-2);
+  font-size: var(--corps-2);
+  font-weight: 550;
+  text-decoration: none;
+  transition: color var(--transition-rapide);
+}
+.fil-ariane__lien:hover { color: var(--primaire); }
+.fil-ariane__fleche {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.state { margin-top: var(--espace-5); }
+
+/* ---- En-tete du livre ---- */
+.livre {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--espace-5);
+  align-items: start;
+  margin: var(--espace-5) 0 var(--espace-5);
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+.livre__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--rayon);
+  background-color: var(--surface-2);
+  box-shadow: var(--ombre-3);
+}
+.livre__image { width: 100%; height: 100%; object-fit: cover; }
+.livre__placeholder { padding: var(--espace-3); color: var(--encre-4); font-size: var(--corps-2); text-align: center; }
+.livre__infos { min-width: 0; }
+.livre__infos .titre-page { margin: var(--espace-2) 0 var(--espace-2); font-size: var(--titre-2); overflow-wrap: anywhere; }
+.livre__auteur { font-size: 1.05rem; color: var(--encre-2); }
+.livre__annee { margin-top: var(--espace-1); color: var(--encre-3); }
+
+/* ---- Formulaire ---- */
+.formulaire {
+  margin-bottom: var(--espace-7);
+  padding: var(--espace-5);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-grand);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-fixe);
+}
+.formulaire__titre { margin-bottom: var(--espace-5); font-size: var(--titre-2); font-weight: 700; letter-spacing: var(--interlettrage-titre); }
+.rangee { display: grid; grid-template-columns: 1fr 1fr; gap: var(--espace-4); margin-bottom: var(--espace-5); }
+.input.invalide { border-color: var(--alerte-encre); }
+.msg { color: var(--alerte-encre); font-size: var(--petit); }
+
+.banniere { margin-bottom: var(--espace-5); padding: var(--espace-3) var(--espace-4); border: 1px solid transparent; border-radius: var(--rayon); font-size: var(--corps-2); }
+.banniere--ok { background-color: var(--dispo-fond); border-color: var(--dispo-bord); color: var(--dispo-encre); }
+.banniere--ko { background-color: var(--alerte-fond); border-color: var(--alerte-bord); color: var(--alerte-encre); }
+
+.legende { display: flex; align-items: center; gap: var(--espace-2); margin-bottom: var(--espace-5); color: var(--encre-3); font-size: var(--petit); }
+.echantillon {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--reserve-bord);
+  border-radius: 4px;
+  background: repeating-linear-gradient(45deg, var(--reserve-fond), var(--reserve-fond) 3px, var(--surface) 3px, var(--surface) 6px);
+}
+
+.button--pleine { width: 100%; min-height: 2.875rem; }
+.actions { display: flex; flex-direction: column; gap: var(--espace-3); }
+.actions .button { width: 100%; min-height: 2.875rem; }
+.button:disabled { opacity: 0.6; }
+
+.recap { display: grid; grid-template-columns: max-content 1fr; gap: var(--espace-2) var(--espace-5); margin-bottom: var(--espace-5); }
+.recap dt { color: var(--encre-3); }
+.recap dd { font-weight: 600; overflow-wrap: anywhere; }
+
+@media (max-width: 640px) {
+  .rangee { grid-template-columns: 1fr; }
+  .livre { grid-template-columns: 110px 1fr; padding: var(--espace-4); }
+}
